@@ -1,0 +1,10 @@
+transformers==4.19.2
+diffusers==0.11.1
+invisible_watermark==0.1.5
+basicsr==1.4.2
+einops==0.6.0
+omegaconf==2.3.0
+taming-transformers-rom1504==0.0.6
+pytorch_lightning==1.8.6
+clip==0.2.0
+kornia==0.6.8
