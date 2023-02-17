@@ -1,4 +1,6 @@
-# <div align="center"><b>T2I-Adapter</a></b></div>
+<p align="center">
+  <img src="assets/logo2.png" height=65>
+</p>
 
 <div align="center">
 
@@ -172,3 +174,5 @@ Stable Diffusion results guided with the segmentation and sketch adapters togeth
 
 
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=TencentARC/T2I-Adapter)
+
+Logo materials: [adapter](https://www.flaticon.com/free-icon/adapter_4777242), [lightbulb](https://www.flaticon.com/free-icon/lightbulb_3176369)
