@@ -47,7 +47,6 @@ def load_model_from_config(config, ckpt, verbose=False):
 @master_only
 def mkdir_and_rename(path):
     """mkdirs. If path exists, rename it with timestamp and create a new one.
-
     Args:
         path (str): Folder path.
     """
@@ -85,7 +84,12 @@ parser.add_argument(
         type=str,
         nargs="?",
         default="An Iron man"
-    )
+)
+parser.add_argument(
+        "--neg_prompt",
+        type=str,
+        default="ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face"
+)
 parser.add_argument(
         "--path_cond",
         type=str,
@@ -102,6 +106,11 @@ parser.add_argument(
     type=int,
     default=10000,
     help="the prompt to render"
+)
+parser.add_argument(
+    "--device",
+    type=str,
+    default="cuda"
 )
 parser.add_argument(
     "--num_workers",
@@ -224,27 +233,14 @@ if __name__ == '__main__':
     # seed_everything(42)
     config = OmegaConf.load(f"{opt.config}")
     opt.name = config['name']
-
-    # distributed setting
-    init_dist(opt.launcher)
-    torch.backends.cudnn.benchmark = True
-    device='cuda'
+    device=opt.device
 
     # stable diffusion
     model = load_model_from_config(config, f"{opt.ckpt}").to(device)
 
     # Adaptor
     model_ad = Adapter(cin=int(3*64), channels=[320, 640, 1280, 1280][:4], nums_rb=2, ksize=1, sk=True, use_conv=False).to(device)
-
-    # to gpus
-    model_ad = torch.nn.parallel.DistributedDataParallel(
-        model_ad,
-        device_ids=[torch.cuda.current_device()])
-    model_ad.module.load_state_dict(torch.load(opt.ckpt_ad))
-
-    model = torch.nn.parallel.DistributedDataParallel(
-        model,
-        device_ids=[torch.cuda.current_device()])
+    model_ad.load_state_dict(torch.load(opt.ckpt_ad))
 
     experiments_root = osp.join('experiments', opt.name)
 
@@ -266,12 +262,12 @@ if __name__ == '__main__':
     for v_idx in range(opt.n_samples):
         with torch.no_grad():
             if opt.dpm_solver:
-                sampler = DPMSolverSampler(model.module)
+                sampler = DPMSolverSampler(model)
             elif opt.plms:
-                sampler = PLMSSampler(model.module)
+                sampler = PLMSSampler(model)
             else:
-                sampler = DDIMSampler(model.module)
-            c = model.module.get_learned_conditioning([opt.prompt])
+                sampler = DDIMSampler(model)
+            c = model.get_learned_conditioning([opt.prompt])
 
             # costumer input
             pose = cv2.imread(opt.path_cond)
@@ -282,7 +278,7 @@ if __name__ == '__main__':
             im_pose = tensor2img(pose)
             cv2.imwrite(os.path.join(experiments_root, 'visualization', 'pose_idx%04d.png'%(v_idx)), im_pose)
 
-            features_adapter = model_ad(pose)
+            features_adapter = model_ad(pose.to(device))
 
             shape = [opt.C, opt.H // opt.f, opt.W // opt.f]
 
@@ -292,18 +288,17 @@ if __name__ == '__main__':
                                                 shape=shape,
                                                 verbose=False,
                                                 unconditional_guidance_scale=opt.scale,
-                                                unconditional_conditioning=model.module.get_learned_conditioning(["ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face"]),
+                                                unconditional_conditioning=model.get_learned_conditioning([opt.neg_prompt]),
                                                 eta=opt.ddim_eta,
                                                 x_T=None,
                                                 features_adapter1=features_adapter,
                                                 mode = 'pose'
                                                 )
 
-            x_samples_ddim = model.module.decode_first_stage(samples_ddim)
+            x_samples_ddim = model.decode_first_stage(samples_ddim)
             x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
             x_samples_ddim = x_samples_ddim.cpu().permute(0, 2, 3, 1).numpy()
             for id_sample, x_sample in enumerate(x_samples_ddim):
                 x_sample = 255.*x_sample
                 img = x_sample.astype(np.uint8)
                 cv2.imwrite(os.path.join(experiments_root, 'visualization', 'sample_idx%04d_s%04d.png'%(v_idx, id_sample)), img[:,:,::-1])
-
