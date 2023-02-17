@@ -56,31 +56,31 @@ pip install -r requirements.txt
 
 - Sketch to Image Transition
 
-> python -m torch.distributed.launch --nproc_per_node=1 test_sketch.py --plms --auto_resume --prompt "A car with flying wings" --path_cond examples/sketch/car.png --ckpt models/sd-v1-4.ckpt --type_in sketch
+> python test_sketch.py --plms --auto_resume --prompt "A car with flying wings" --path_cond examples/sketch/car.png --ckpt models/sd-v1-4.ckpt --type_in sketch
 
 - Image to Image Transition
 
-> python -m torch.distributed.launch --nproc_per_node=1 test_sketch.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/anything_sketch/human.png --ckpt models/sd-v1-4.ckpt --type_in image
+> python test_sketch.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/anything_sketch/human.png --ckpt models/sd-v1-4.ckpt --type_in image
 
 - Image to Image Transition with **Anything** setting
 
-> python -m torch.distributed.launch --nproc_per_node=1 test_sketch.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/anything_sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --type_in image
+> python test_sketch.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/anything_sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --type_in image
 
 #### Keypose Adapter
 
-> python -m torch.distributed.launch --nproc_per_node=1 test_keypose.py --plms --auto_resume --prompt "An Iron man" --path_cond examples/keypose/iron.png
+> python test_keypose.py --plms --auto_resume --prompt "An Iron man" --path_cond examples/keypose/iron.png
 
 #### Segmentation Adapter
 
-> python -m torch.distributed.launch --nproc_per_node=1 test_seg.py --plms --auto_resume --prompt "A black Honda motorcycle parked in front of a garage" --path_cond examples/seg/motor.png
+> python test_seg.py --plms --auto_resume --prompt "A black Honda motorcycle parked in front of a garage" --path_cond examples/seg/motor.png
 
 #### Two adapters: Segmentation and Sketch Adapters
 
-> python -m torch.distributed.launch --nproc_per_node=1 test_seg_sketch.py --plms --auto_resume --prompt "An all white kitchen with an electric stovetop" --path_cond examples/seg_sketch/mask.png --path_cond2 examples/seg_sketch/edge.png
+> python test_seg_sketch.py --plms --auto_resume --prompt "An all white kitchen with an electric stovetop" --path_cond examples/seg_sketch/mask.png --path_cond2 examples/seg_sketch/edge.png
 
 #### Local editing with adapters
 >
-> python -m torch.distributed.launch --nproc_per_node=1 test_sketch_edit.py --plms --auto_resume --prompt "A white cat" --path_cond examples/edit_cat/edge_2.png --path_x0 examples/edit_cat/im.png --path_mask examples/edit_cat/mask.png
+> python test_sketch_edit.py --plms --auto_resume --prompt "A white cat" --path_cond examples/edit_cat/edge_2.png --path_x0 examples/edit_cat/im.png --path_mask examples/edit_cat/mask.png
 
 ## Stable Diffusion + T2I-Adapters (only ~70M parameters, ~300M storage space)
 
