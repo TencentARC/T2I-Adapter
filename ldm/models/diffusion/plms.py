@@ -78,6 +78,7 @@ class PLMSSampler(object):
                features_adapter1=None,
                features_adapter2=None,
                mode = 'sketch',
+               con_strength=30,
                # this has to come in the same format as the conditioning, # e.g. as encoded tokens, ...
                **kwargs
                ):
@@ -113,7 +114,8 @@ class PLMSSampler(object):
                                                     unconditional_conditioning=unconditional_conditioning,
                                                     features_adapter1=copy.deepcopy(features_adapter1),
                                                     features_adapter2=copy.deepcopy(features_adapter2),
-                                                    mode = mode
+                                                    mode = mode,
+                                                    con_strength = con_strength
                                                     )
         return samples, intermediates
 
@@ -123,7 +125,7 @@ class PLMSSampler(object):
                       callback=None, timesteps=None, quantize_denoised=False,
                       mask=None, x0=None, img_callback=None, log_every_t=100,
                       temperature=1., noise_dropout=0., score_corrector=None, corrector_kwargs=None,
-                      unconditional_guidance_scale=1., unconditional_conditioning=None,features_adapter1=None, features_adapter2=None, mode='sketch'):
+                      unconditional_guidance_scale=1., unconditional_conditioning=None,features_adapter1=None, features_adapter2=None, mode='sketch', con_strength=30):
         device = self.model.betas.device
         b = shape[0]
         if x_T is None:
@@ -155,7 +157,7 @@ class PLMSSampler(object):
                 img = img_orig * mask + (1. - mask) * img
 
             if mode == 'sketch':
-                if index<30:
+                if index<con_strength:
                     features_adapter = None
                 else:
                     features_adapter = features_adapter1
