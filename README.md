@@ -68,6 +68,16 @@ pip install -r requirements.txt
 
 > python test_sketch.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/anything_sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --type_in image
 
+##### Gradio Demo
+<p align="center">
+  <img src="assets/gradio_sketch.png">
+</p>
+You can use gradio to experience all these three functions at once. CPU is also supported by setting device to 'cpu'.
+
+```bash
+python gradio_sketch.py
+```
+
 #### Keypose Adapter
 
 > python test_keypose.py --plms --auto_resume --prompt "An Iron man" --path_cond examples/keypose/iron.png
