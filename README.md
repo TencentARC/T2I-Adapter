@@ -4,7 +4,7 @@
 
 <div align="center">
 
-⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test)
+⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test) **|** [![Replicate](https://replicate.com/cjwbw/t2i-adapter/badge)](https://replicate.com/cjwbw/t2i-adapter) 
 
 </div>
 
