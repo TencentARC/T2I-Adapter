@@ -64,7 +64,7 @@ pip install -r requirements.txt
 
 > python test_sketch.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/anything_sketch/human.png --ckpt models/sd-v1-4.ckpt --type_in image
 
-- Image to Image Transition with **Anything** setting
+- Transition with **Anything** setting
 
 > python test_sketch.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/anything_sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --type_in image
 
