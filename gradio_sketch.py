@@ -82,35 +82,33 @@ def process(input_img, type_in, color_back, prompt, neg_prompt, fix_sample, scal
         im = im>0.5
         im = im.float()
         im_edge = tensor2img(im)
-
-    c = model.get_learned_conditioning([prompt])
-    nc = model.get_learned_conditioning([neg_prompt])
     
     with torch.no_grad():
+        c = model.get_learned_conditioning([prompt])
+        nc = model.get_learned_conditioning([neg_prompt])
         # extract condition features
         features_adapter = model_ad(im.to(device))
+        shape = [4, 64, 64]
 
-    shape = [4, 64, 64]
+        # sampling
+        samples_ddim, _ = sampler.sample(S=50,
+                                        conditioning=c,
+                                        batch_size=1,
+                                        shape=shape,
+                                        verbose=False,
+                                        unconditional_guidance_scale=scale,
+                                        unconditional_conditioning=nc,
+                                        eta=0.0,
+                                        x_T=None,
+                                        features_adapter1=features_adapter,
+                                        mode = 'sketch',
+                                        con_strength = con_strength)
 
-    # sampling
-    samples_ddim, _ = sampler.sample(S=50,
-                                    conditioning=c,
-                                    batch_size=1,
-                                    shape=shape,
-                                    verbose=False,
-                                    unconditional_guidance_scale=scale,
-                                    unconditional_conditioning=nc,
-                                    eta=0.0,
-                                    x_T=None,
-                                    features_adapter1=features_adapter,
-                                    mode = 'sketch',
-                                    con_strength = con_strength)
-
-    x_samples_ddim = model.decode_first_stage(samples_ddim)
-    x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
-    x_samples_ddim = x_samples_ddim.permute(0, 2, 3, 1).numpy()[0]
-    x_samples_ddim = 255.*x_samples_ddim
-    x_samples_ddim = x_samples_ddim.astype(np.uint8)
+        x_samples_ddim = model.decode_first_stage(samples_ddim)
+        x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
+        x_samples_ddim = x_samples_ddim.permute(0, 2, 3, 1).numpy()[0]
+        x_samples_ddim = 255.*x_samples_ddim
+        x_samples_ddim = x_samples_ddim.astype(np.uint8)
 
     return [im_edge, x_samples_ddim]
 
