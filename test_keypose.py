@@ -23,7 +23,21 @@ from ldm.models.diffusion.dpm_solver import DPMSolverSampler
 from ldm.models.diffusion.plms import PLMSSampler
 from ldm.modules.encoders.adapter import Adapter
 from ldm.util import instantiate_from_config
+import mmcv
+from mmdet.apis import inference_detector, init_detector
+from mmpose.apis import (inference_top_down_pose_model, init_pose_model, process_mmdet_results, vis_pose_result)
 
+skeleton = [[15, 13], [13, 11], [16, 14], [14, 12], [11, 12], [5, 11], [6, 12], [5, 6], [5, 7], [6, 8], [7, 9], [8, 10],
+            [1, 2], [0, 1], [0, 2], [1, 3], [2, 4], [3, 5], [4, 6]]
+
+pose_kpt_color = [[51, 153, 255], [51, 153, 255], [51, 153, 255], [51, 153, 255], [51, 153, 255], [0, 255, 0],
+                  [255, 128, 0], [0, 255, 0], [255, 128, 0], [0, 255, 0], [255, 128, 0], [0, 255, 0], [255, 128, 0],
+                  [0, 255, 0], [255, 128, 0], [0, 255, 0], [255, 128, 0]]
+
+pose_link_color = [[0, 255, 0], [0, 255, 0], [255, 128, 0], [255, 128, 0],
+                   [51, 153, 255], [51, 153, 255], [51, 153, 255], [51, 153, 255], [0, 255, 0], [255, 128, 0],
+                   [0, 255, 0], [255, 128, 0], [51, 153, 255], [51, 153, 255], [51, 153, 255], [51, 153, 255],
+                   [51, 153, 255], [51, 153, 255], [51, 153, 255]]
 
 def load_model_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
@@ -78,6 +92,72 @@ def load_resume_state(opt):
 
     return resume_state
 
+def imshow_keypoints(img,
+                     pose_result,
+                     skeleton=None,
+                     kpt_score_thr=0.1,
+                     pose_kpt_color=None,
+                     pose_link_color=None,
+                     radius=4,
+                     thickness=1):
+    """Draw keypoints and links on an image.
+
+    Args:
+            img (ndarry): The image to draw poses on.
+            pose_result (list[kpts]): The poses to draw. Each element kpts is
+                a set of K keypoints as an Kx3 numpy.ndarray, where each
+                keypoint is represented as x, y, score.
+            kpt_score_thr (float, optional): Minimum score of keypoints
+                to be shown. Default: 0.3.
+            pose_kpt_color (np.array[Nx3]`): Color of N keypoints. If None,
+                the keypoint will not be drawn.
+            pose_link_color (np.array[Mx3]): Color of M links. If None, the
+                links will not be drawn.
+            thickness (int): Thickness of lines.
+    """
+
+    img_h, img_w, _ = img.shape
+    img = np.zeros(img.shape)
+
+    for idx, kpts in enumerate(pose_result):
+        if idx > 1:
+            continue
+        kpts = kpts['keypoints']
+        # print(kpts)
+        kpts = np.array(kpts, copy=False)
+
+        # draw each point on image
+        if pose_kpt_color is not None:
+            assert len(pose_kpt_color) == len(kpts)
+
+            for kid, kpt in enumerate(kpts):
+                x_coord, y_coord, kpt_score = int(kpt[0]), int(kpt[1]), kpt[2]
+
+                if kpt_score < kpt_score_thr or pose_kpt_color[kid] is None:
+                    # skip the point that should not be drawn
+                    continue
+
+                color = tuple(int(c) for c in pose_kpt_color[kid])
+                cv2.circle(img, (int(x_coord), int(y_coord)), radius, color, -1)
+
+        # draw links
+        if skeleton is not None and pose_link_color is not None:
+            assert len(pose_link_color) == len(skeleton)
+
+            for sk_id, sk in enumerate(skeleton):
+                pos1 = (int(kpts[sk[0], 0]), int(kpts[sk[0], 1]))
+                pos2 = (int(kpts[sk[1], 0]), int(kpts[sk[1], 1]))
+
+                if (pos1[0] <= 0 or pos1[0] >= img_w or pos1[1] <= 0 or pos1[1] >= img_h or pos2[0] <= 0
+                        or pos2[0] >= img_w or pos2[1] <= 0 or pos2[1] >= img_h or kpts[sk[0], 2] < kpt_score_thr
+                        or kpts[sk[1], 2] < kpt_score_thr or pose_link_color[sk_id] is None):
+                    # skip the link that should not be drawn
+                    continue
+                color = tuple(int(c) for c in pose_link_color[sk_id])
+                cv2.line(img, pos1, pos2, color, thickness=thickness)
+
+    return img
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
         "--prompt",
@@ -94,6 +174,11 @@ parser.add_argument(
         "--path_cond",
         type=str,
         default="examples/keypose/iron.png"
+)
+parser.add_argument(
+        "--type_in",
+        type=str,
+        default="sketch"
 )
 parser.add_argument(
     "--bsize",
@@ -227,6 +312,41 @@ parser.add_argument(
         type=str,
         help='node rank for distributed training'
 )
+
+## mmpose part ##
+parser.add_argument(
+        '--det_config', 
+        help='Config file for detection', 
+        default='models/faster_rcnn_r50_fpn_coco.py'
+)
+parser.add_argument(
+    '--det_checkpoint',
+    help='Checkpoint file for detection',
+    default='models/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth'
+)
+parser.add_argument(
+    '--pose_config',
+    help='Config file for pose',
+    default='models/hrnet_w48_coco_256x192.py'
+)
+parser.add_argument(
+    '--pose_checkpoint',
+    help='Checkpoint file for pose',
+    default='models/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth'
+)
+parser.add_argument(
+    '--det-cat-id', 
+    type=int, 
+    default=1, 
+    help='Category id for bounding box detection model'
+)
+parser.add_argument(
+    '--bbox-thr', 
+    type=float, 
+    default=0.2, 
+    help='Bounding box score threshold'
+)
+
 opt = parser.parse_args()
 
 if __name__ == '__main__':
@@ -270,13 +390,55 @@ if __name__ == '__main__':
             c = model.get_learned_conditioning([opt.prompt])
 
             # costumer input
-            pose = cv2.imread(opt.path_cond)
+            if opt.type_in == 'pose':
+                pose = cv2.imread(opt.path_cond)
+            elif opt.type_in == 'image':
+                # im = cv2.imread(opt.path_cond)
+                image = cv2.imread(opt.path_cond)
+                det_config_mmcv = mmcv.Config.fromfile(opt.det_config)
+                det_model = init_detector(det_config_mmcv, opt.det_checkpoint, device=device)
+                pose_config_mmcv = mmcv.Config.fromfile(opt.pose_config)
+                pose_model = init_pose_model(pose_config_mmcv, opt.pose_checkpoint, device=device)
+
+                mmdet_results = inference_detector(det_model, opt.path_cond)
+                # keep the person class bounding boxes.
+                person_results = process_mmdet_results(mmdet_results, opt.det_cat_id)
+
+                # optional
+                return_heatmap = False
+                dataset = pose_model.cfg.data['test']['type']
+
+                # e.g. use ('backbone', ) to return backbone feature
+                output_layer_names = None
+                pose_results, returned_outputs = inference_top_down_pose_model(
+                    pose_model,
+                    opt.path_cond,
+                    person_results,
+                    bbox_thr=opt.bbox_thr,
+                    format='xyxy',
+                    dataset=dataset,
+                    dataset_info=None,
+                    return_heatmap=return_heatmap,
+                    outputs=output_layer_names)
+
+                # show the results
+                pose = imshow_keypoints(
+                    image,
+                    pose_results,
+                    skeleton=skeleton,
+                    pose_kpt_color=pose_kpt_color,
+                    pose_link_color=pose_link_color,
+                    radius=2,
+                    thickness=2)
+
+            else:
+                raise TypeError('Wrong input condition.')
+
             pose = cv2.resize(pose,(512,512))
+            cv2.imwrite(os.path.join(experiments_root, 'visualization', 'pose_idx%04d.png'%(v_idx)), pose)
+            
             pose = img2tensor(pose, bgr2rgb=True, float32=True)/255.
             pose = pose.unsqueeze(0)
-
-            im_pose = tensor2img(pose)
-            cv2.imwrite(os.path.join(experiments_root, 'visualization', 'pose_idx%04d.png'%(v_idx)), im_pose)
 
             features_adapter = model_ad(pose.to(device))
 

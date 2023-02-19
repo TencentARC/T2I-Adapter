@@ -34,6 +34,7 @@ Put the downloaded models in the `T2I-Adapter/models` folder.
 ` file.
 3. [Optional] If you want to use **Anything v4.0** models, you can download the pretrained models from <https://huggingface.co/andite/anything-v4.0/tree/main>. You need to download the `anything-v4.0-pruned.ckpt` file.
 4. The pretrained **clip-vit-large-patch14** folder can be download from <https://huggingface.co/openai/clip-vit-large-patch14/tree/main>. Remember to download the whole folder!
+5. The pretrained keypose detection models include FasterRCNN (human detection) from <https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth> and HRNet (pose detection) from <https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth>.
 
 After downloading, the folder structure should be like this:
 
@@ -48,23 +49,24 @@ After downloading, the folder structure should be like this:
 ```bash
 pip install -r requirements.txt
 ```
+- If you want to use the full function of keypose-guided generation, you need to install MMPose. For details please refer to <https://github.com/open-mmlab/mmpose>.
 
 ### 💻 How to Test
 
 - The results are in the `experiments` folder.
 - If you want to use the `Anything v4.0`, please add `--ckpt models/anything-v4.0-pruned.ckpt` in the following commands.
 
-#### Sketch Adapter
+#### **Sketch Adapter**
 
-- Sketch to Image Transition
+- Sketch to Image Generation
 
 > python test_sketch.py --plms --auto_resume --prompt "A car with flying wings" --path_cond examples/sketch/car.png --ckpt models/sd-v1-4.ckpt --type_in sketch
 
-- Image to Image Transition
+- Image to Image Generation
 
 > python test_sketch.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/anything_sketch/human.png --ckpt models/sd-v1-4.ckpt --type_in image
 
-- Transition with **Anything** setting
+- Generation with **Anything** setting
 
 > python test_sketch.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/anything_sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --type_in image
 
@@ -78,20 +80,30 @@ You can use gradio to experience all these three functions at once. CPU is also 
 python gradio_sketch.py
 ```
 
-#### Keypose Adapter
+#### **Keypose Adapter**
 
-> python test_keypose.py --plms --auto_resume --prompt "An Iron man" --path_cond examples/keypose/iron.png
+- Keypose to Image Generation
 
-#### Segmentation Adapter
+> python test_keypose.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/keypose/iron.png --type_in pose
+
+- Image to Image Generation
+
+> python test_keypose.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/sketch/human.png --type_in image
+
+- Generation with **Anything** setting
+
+> python test_keypose.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --type_in image
+
+#### **Segmentation Adapter**
 
 > python test_seg.py --plms --auto_resume --prompt "A black Honda motorcycle parked in front of a garage" --path_cond examples/seg/motor.png
 
-#### Two adapters: Segmentation and Sketch Adapters
+#### **Two adapters: Segmentation and Sketch Adapters**
 
 > python test_seg_sketch.py --plms --auto_resume --prompt "An all white kitchen with an electric stovetop" --path_cond examples/seg_sketch/mask.png --path_cond2 examples/seg_sketch/edge.png
 
-#### Local editing with adapters
->
+#### **Local editing with adapters**
+
 > python test_sketch_edit.py --plms --auto_resume --prompt "A white cat" --path_cond examples/edit_cat/edge_2.png --path_x0 examples/edit_cat/im.png --path_mask examples/edit_cat/mask.png
 
 ## Stable Diffusion + T2I-Adapters (only ~70M parameters, ~300M storage space)
