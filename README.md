@@ -56,6 +56,10 @@ pip install -r requirements.txt
 - The results are in the `experiments` folder.
 - If you want to use the `Anything v4.0`, please add `--ckpt models/anything-v4.0-pruned.ckpt` in the following commands.
 
+#### **For Simple Experience**
+
+> python app.py
+
 #### **Sketch Adapter**
 
 - Sketch to Image Generation
