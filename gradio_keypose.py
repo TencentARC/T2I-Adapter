@@ -110,7 +110,7 @@ def load_model_from_config(config, ckpt, verbose=False):
     model.eval()
     return model
 
-device = 'cuda'
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 config = OmegaConf.load("configs/stable-diffusion/test_keypose.yaml")
 config.model.params.cond_stage_config.params.device = device
 model = load_model_from_config(config, "models/sd-v1-4.ckpt").to(device)
@@ -130,6 +130,7 @@ det_config_mmcv = mmcv.Config.fromfile(det_config)
 det_model = init_detector(det_config_mmcv, det_checkpoint, device=device)
 pose_config_mmcv = mmcv.Config.fromfile(pose_config)
 pose_model = init_pose_model(pose_config_mmcv, pose_checkpoint, device=device)
+W, H = 512, 512
 
 
 def process(input_img, type_in, prompt, neg_prompt, fix_sample, scale, con_strength, base_model):
@@ -146,7 +147,7 @@ def process(input_img, type_in, prompt, neg_prompt, fix_sample, scale, con_stren
     con_strength = int((1-con_strength)*50)
     if fix_sample == 'True':
         seed_everything(42)
-    im = cv2.resize(input_img,(512,512))
+    im = cv2.resize(input_img,(W,H))
 
     if type_in == 'Keypose':
         im_pose = im.copy()
@@ -184,7 +185,7 @@ def process(input_img, type_in, prompt, neg_prompt, fix_sample, scale, con_stren
             pose_link_color=pose_link_color,
             radius=2,
             thickness=2)
-    im_pose = cv2.resize(im_pose,(512,512))
+    im_pose = cv2.resize(im_pose,(W,H))
     
     with torch.no_grad():
         c = model.get_learned_conditioning([prompt])
@@ -194,7 +195,7 @@ def process(input_img, type_in, prompt, neg_prompt, fix_sample, scale, con_stren
         pose = pose.unsqueeze(0)
         features_adapter = model_ad(pose.to(device))
 
-        shape = [4, 64, 64]
+        shape = [4, W//8, H//8]
 
         # sampling
         samples_ddim, _ = sampler.sample(S=50,
@@ -212,6 +213,7 @@ def process(input_img, type_in, prompt, neg_prompt, fix_sample, scale, con_stren
 
         x_samples_ddim = model.decode_first_stage(samples_ddim)
         x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
+        x_samples_ddim = x_samples_ddim.to('cpu')
         x_samples_ddim = x_samples_ddim.permute(0, 2, 3, 1).numpy()[0]
         x_samples_ddim = 255.*x_samples_ddim
         x_samples_ddim = x_samples_ddim.astype(np.uint8)

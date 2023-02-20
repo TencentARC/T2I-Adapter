@@ -36,7 +36,7 @@ def load_model_from_config(config, ckpt, verbose=False):
     model.eval()
     return model
 
-device = 'cuda'
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 config = OmegaConf.load("configs/stable-diffusion/test_sketch.yaml")
 config.model.params.cond_stage_config.params.device = device
 model = load_model_from_config(config, "models/sd-v1-4.ckpt").to(device)
@@ -49,6 +49,7 @@ net_G.load_state_dict({k.replace('module.',''):v for k, v in ckp.items()})
 net_G.to(device)
 sampler = PLMSSampler(model)
 save_memory=True
+W, H = 512, 512
 
 
 def process(input_img, type_in, color_back, prompt, neg_prompt, fix_sample, scale, con_strength, base_model):
@@ -65,15 +66,13 @@ def process(input_img, type_in, color_back, prompt, neg_prompt, fix_sample, scal
     con_strength = int((1-con_strength)*50)
     if fix_sample == 'True':
         seed_everything(42)
-    im = cv2.resize(input_img,(512,512))
+    im = cv2.resize(input_img,(W,H))
 
     if type_in == 'Sketch':
-        # net_G = net_G.cpu()
         if color_back == 'White':
             im = 255-im
         im_edge = im.copy()
         im = img2tensor(im)[0].unsqueeze(0).unsqueeze(0)/255.
-        # edge = 1-edge # for white background
         im = im>0.5
         im = im.float()
     elif type_in == 'Image':
@@ -88,7 +87,7 @@ def process(input_img, type_in, color_back, prompt, neg_prompt, fix_sample, scal
         nc = model.get_learned_conditioning([neg_prompt])
         # extract condition features
         features_adapter = model_ad(im.to(device))
-        shape = [4, 64, 64]
+        shape = [4, W//8, H//8]
 
         # sampling
         samples_ddim, _ = sampler.sample(S=50,
@@ -106,6 +105,7 @@ def process(input_img, type_in, color_back, prompt, neg_prompt, fix_sample, scal
 
         x_samples_ddim = model.decode_first_stage(samples_ddim)
         x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
+        x_samples_ddim = x_samples_ddim.to('cpu')
         x_samples_ddim = x_samples_ddim.permute(0, 2, 3, 1).numpy()[0]
         x_samples_ddim = 255.*x_samples_ddim
         x_samples_ddim = x_samples_ddim.astype(np.uint8)
