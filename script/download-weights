@@ -1,0 +1,112 @@
+#!/usr/bin/env python
+
+"""
+run cog script/download-weights <HF_username> <HF_token> to download all the necessary files
+"""
+
+import os
+import sys
+from tqdm import tqdm
+import requests
+
+
+MODEL_CACHE = "./models"
+CLIP_MODEL_DIR = "clip-vit-large-patch14"
+
+
+if not os.path.exists(os.path.join(MODEL_CACHE, CLIP_MODEL_DIR)):
+    os.makedirs(os.path.join(MODEL_CACHE, CLIP_MODEL_DIR), exist_ok=True)
+
+
+MODEL_MAP = {
+    "sd-v1-4.ckpt": {
+        "url": "https://huggingface.co/CompVis/stable-diffusion-v-1-4-original/resolve/main/sd-v1-4.ckpt",
+        "requires_login": True,
+    },
+    "t2iadapter_keypose_sd14v1.pth": {
+        "url": "https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/models/t2iadapter_keypose_sd14v1.pth",
+    },
+    "t2iadapter_seg_sd14v1.pth": {
+        "url": "https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/models/t2iadapter_seg_sd14v1.pth",
+    },
+    "t2iadapter_sketch_sd14v1.pth": {
+        "url": "https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/models/t2iadapter_sketch_sd14v1.pth",
+    },
+    "anything-v4.0-pruned.ckpt": {
+        "url": "https://huggingface.co/andite/anything-v4.0/resolve/main/anything-v4.0-pruned.ckpt",
+    },
+}
+
+CLIP_MODEL_MAP = {
+    "config.json": {
+        "url": "https://huggingface.co/openai/clip-vit-large-patch14/resolve/main/config.json",
+    },
+    "pytorch_model.bin": {
+        "url": "https://huggingface.co/openai/clip-vit-large-patch14/resolve/main/pytorch_model.bin",
+    },
+    "merges.txt": {
+        "url": "https://huggingface.co/openai/clip-vit-large-patch14/resolve/main/merges.txt",
+    },
+    "preprocessor_config.json": {
+        "url": "https://huggingface.co/openai/clip-vit-large-patch14/resolve/main/preprocessor_config.json",
+    },
+    "special_tokens_map.json": {
+        "url": "https://huggingface.co/openai/clip-vit-large-patch14/resolve/main/special_tokens_map.json",
+    },
+    "tokenizer.json": {
+        "url": "https://huggingface.co/openai/clip-vit-large-patch14/resolve/main/tokenizer.json",
+    },
+    "tokenizer_config.json": {
+        "url": "https://huggingface.co/openai/clip-vit-large-patch14/resolve/main/tokenizer_config.json",
+    },
+    "vocab.json": {
+        "url": "https://huggingface.co/openai/clip-vit-large-patch14/resolve/main/vocab.json",
+    },
+}
+
+
+def download_model(model_map, model_ckpt, sub_dir=None):
+    url = model_map[model_ckpt]["url"]
+    if "requires_login" in model_map[model_ckpt]:
+        username = sys.argv[1]
+        token = sys.argv[2]
+        _, path = url.split("https://")
+        url = f"https://{username}:{token}@{path}"
+
+    # contact server for model
+    print(f"..attempting to download {model_ckpt}...this may take a while")
+    ckpt_request = requests.get(url, stream=True)
+    request_status = ckpt_request.status_code
+
+    # inform user of errors
+    if request_status == 403:
+        raise ConnectionRefusedError(
+            "You have not accepted the license for this model."
+        )
+    elif request_status == 404:
+        raise ConnectionError("Could not make contact with server")
+    elif request_status != 200:
+        raise ConnectionError(
+            f"Some other error has ocurred - response code: {request_status}"
+        )
+
+    # write to model path
+    out_path = (
+        os.path.join(MODEL_CACHE, sub_dir, model_ckpt)
+        if sub_dir
+        else os.path.join(MODEL_CACHE, model_ckpt)
+    )
+    with open(out_path, "wb") as model_file:
+        file_size = int(ckpt_request.headers.get("Content-Length"))
+        with tqdm(total=file_size, unit="B", unit_scale=True, desc=model_ckpt) as pbar:
+            for chunk in ckpt_request.iter_content(chunk_size=1024):
+                if chunk:  # filter out keep-alive new chunks
+                    model_file.write(chunk)
+                    pbar.update(len(chunk))
+
+
+# download checkpoints
+for file in MODEL_MAP:
+    download_model(MODEL_MAP, file)
+for file in CLIP_MODEL_MAP:
+    download_model(CLIP_MODEL_MAP, file, CLIP_MODEL_DIR)
