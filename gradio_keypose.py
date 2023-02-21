@@ -243,12 +243,12 @@ with block:
                 fix_sample = gr.inputs.Radio(['True', 'False'], type="value", default='False', label='Fix Sampling\n (Fix the random seed to produce a fixed output)')
             run_button = gr.Button(label="Run")
             con_strength = gr.Slider(label="Controling Strength (The guidance strength of the keypose to the result)", minimum=0, maximum=1, value=1, step=0.1)
-            scale = gr.Slider(label="Guidance Scale (Classifier free guidance)", minimum=0.1, maximum=30.0, value=7.5, step=0.1)
+            scale = gr.Slider(label="Guidance Scale (Classifier free guidance)", minimum=0.1, maximum=30.0, value=9, step=0.1)
             base_model = gr.inputs.Radio(['sd-v1-4.ckpt', 'anything-v4.0-pruned.ckpt'], type="value", default='sd-v1-4.ckpt', label='The base model you want to use')
         with gr.Column():
             result = gr.Gallery(label='Output', show_label=False, elem_id="gallery").style(grid=2, height='auto')
         ips = [input_img, type_in, prompt, neg_prompt, fix_sample, scale, con_strength, base_model]
     run_button.click(fn=process, inputs=ips, outputs=[result])
 
-block.launch(server_name='9.134.172.88')
+block.launch(server_name='0.0.0.0')
                 
