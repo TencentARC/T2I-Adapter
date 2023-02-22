@@ -1,8 +1,13 @@
 """SAMPLING ONLY."""
-
 import torch
 
 from .dpm_solver import NoiseScheduleVP, model_wrapper, DPM_Solver
+
+
+MODEL_TYPES = {
+    "eps": "noise",
+    "v": "v"
+}
 
 
 class DPMSolverSampler(object):
@@ -56,7 +61,7 @@ class DPMSolverSampler(object):
         C, H, W = shape
         size = (batch_size, C, H, W)
 
-        # print(f'Data shape for DPM-Solver sampling is {size}, sampling steps {S}')
+        print(f'Data shape for DPM-Solver sampling is {size}, sampling steps {S}')
 
         device = self.model.betas.device
         if x_T is None:
@@ -69,7 +74,7 @@ class DPMSolverSampler(object):
         model_fn = model_wrapper(
             lambda x, t, c: self.model.apply_model(x, t, c),
             ns,
-            model_type="noise",
+            model_type=MODEL_TYPES[self.model.parameterization],
             guidance_type="classifier-free",
             condition=conditioning,
             unconditional_condition=unconditional_conditioning,

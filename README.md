@@ -53,72 +53,52 @@ pip install -r requirements.txt
 
 ### 💻 How to Test
 
-- The results are in the `experiments` folder.
-- If you want to use the `Anything v4.0`, please add `--ckpt models/anything-v4.0-pruned.ckpt` in the following commands.
+[//]: # (#### **Gradio Application**)
 
-#### **For Simple Experience**
-
-> python app.py
+[//]: # ()
+[//]: # (> python app.py)
 
 #### **Sketch Adapter**
 
 - Sketch to Image Generation
 
-> python test_sketch.py --plms --auto_resume --prompt "A car with flying wings" --path_cond examples/sketch/car.png --ckpt models/sd-v1-4.ckpt --type_in sketch
+> python test_sketch.py --prompt "A car with flying wings" --path_cond examples/sketch/car.png --ckpt models/sd-v1-4.ckpt --type_in sketch
 
-- Image to Image Generation
+- Image to Sketch to Image Generation
 
-> python test_sketch.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/anything_sketch/human.png --ckpt models/sd-v1-4.ckpt --type_in image
+> python test_sketch.py --prompt "A beautiful girl" --path_cond examples/sketch/human.png --ckpt models/sd-v1-4.ckpt --type_in image
 
-- Generation with **Anything** setting
+- The adaptor is training based on stable-diffusion-v1.4 but can be generalized to other models, such as Anything-v4 which is an anime diffusion model
 
-> python test_sketch.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/anything_sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --type_in image
+> python test_sketch.py --prompt "1girl, masterpiece, high-quality, high-res" --path_cond examples/anything_sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --ckpt_vae models/anything-v4.0.vae.pt --type_in image
 
-##### Gradio Demo
-<p align="center">
-  <img src="assets/gradio_sketch.png">
-</p>
-You can use gradio to experience all these three functions at once. CPU is also supported by setting device to 'cpu'.
-
-```bash
-python gradio_sketch.py
-```
 
 #### **Keypose Adapter**
 
 - Keypose to Image Generation
 
-> python test_keypose.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/keypose/iron.png --type_in pose
+> python test_keypose.py --prompt "A beautiful girl" --path_cond examples/keypose/iron.png --type_in pose
 
 - Image to Image Generation
 
-> python test_keypose.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/sketch/human.png --type_in image
+> python test_keypose.py --prompt "A beautiful girl" --path_cond examples/sketch/human.png --type_in image
 
-- Generation with **Anything** setting
+- Generation anime image with Anything-v4 model
 
-> python test_keypose.py --plms --auto_resume --prompt "A beautiful girl" --path_cond examples/sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --type_in image
+> python test_keypose.py --prompt "A beautiful girl" --path_cond examples/sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --ckpt_vae models/anything-v4.0.vae.pt --type_in image
 
-##### Gradio Demo
-<p align="center">
-  <img src="assets/gradio_keypose.png">
-</p>
-You can use gradio to experience all these three functions at once. CPU is also supported by setting device to 'cpu'.
-
-```bash
-python gradio_keypose.py
-```
 
 #### **Segmentation Adapter**
 
-> python test_seg.py --plms --auto_resume --prompt "A black Honda motorcycle parked in front of a garage" --path_cond examples/seg/motor.png
+> python test_seg.py --prompt "A black Honda motorcycle parked in front of a garage" --path_cond examples/seg/motor.png
 
-#### **Two adapters: Segmentation and Sketch Adapters**
+#### **Combine multiple Adapters**
 
-> python test_seg_sketch.py --plms --auto_resume --prompt "An all white kitchen with an electric stovetop" --path_cond examples/seg_sketch/mask.png --path_cond2 examples/seg_sketch/edge.png
+> python test_composable_adapters.py --prompt "An all white kitchen with an electric stovetop" --seg_cond_path examples/seg_sketch/mask.png --sketch_cond_path examples/seg_sketch/edge.png --sketch_cond_weight 0.5
 
 #### **Local editing with adapters**
 
-> python test_sketch_edit.py --plms --auto_resume --prompt "A white cat" --path_cond examples/edit_cat/edge_2.png --path_x0 examples/edit_cat/im.png --path_mask examples/edit_cat/mask.png
+> python test_sketch_edit.py --prompt "A white cat" --path_cond examples/edit_cat/edge_2.png --path_x0 examples/edit_cat/im.png --path_mask examples/edit_cat/mask.png
 
 ## Stable Diffusion + T2I-Adapters (only ~70M parameters, ~300M storage space)
 

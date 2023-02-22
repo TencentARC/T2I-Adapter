@@ -1,4 +1,3 @@
-name: test_sketch
 model:
   base_learning_rate: 1.0e-04
   target: ldm.models.diffusion.ddpm.LatentDiffusion
