@@ -52,7 +52,7 @@ save_memory=True
 W, H = 512, 512
 
 
-def process(input_img, type_in, color_back, prompt, neg_prompt, fix_sample, scale, con_strength, base_model):
+def process(input_img, type_in, color_back, prompt, neg_prompt, pos_prompt, fix_sample, scale, con_strength, base_model):
     global current_base
     if current_base != base_model:
         ckpt = os.path.join("models", base_model)
@@ -83,7 +83,7 @@ def process(input_img, type_in, color_back, prompt, neg_prompt, fix_sample, scal
         im_edge = tensor2img(im)
     
     with torch.no_grad():
-        c = model.get_learned_conditioning([prompt])
+        c = model.get_learned_conditioning([prompt + ', ' + pos_prompt])
         nc = model.get_learned_conditioning([neg_prompt])
         # extract condition features
         features_adapter = model_ad(im.to(device))
@@ -130,17 +130,19 @@ with block:
             prompt = gr.Textbox(label="Prompt")
             neg_prompt = gr.Textbox(label="Negative Prompt",
             value='ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face')
+            pos_prompt = gr.Textbox(label="Positive Prompt",
+            value = 'crafted, elegant, meticulous, magnificent, maximum details, extremely hyper aesthetic, intricately detailed')
             with gr.Row():
                 type_in = gr.inputs.Radio(['Sketch', 'Image'], type="value", default='Image', label='Input Types\n (You can input an image or a sketch)')
                 color_back = gr.inputs.Radio(['White', 'Black'], type="value", default='Black', label='Color of the sketch background\n (Only work for sketch input)')
             run_button = gr.Button(label="Run")
             con_strength = gr.Slider(label="Controling Strength (The guidance strength of the sketch to the result)", minimum=0, maximum=1, value=0.4, step=0.1)
-            scale = gr.Slider(label="Guidance Scale (Classifier free guidance)", minimum=0.1, maximum=30.0, value=9, step=0.1)
+            scale = gr.Slider(label="Guidance Scale (Classifier free guidance)", minimum=0.1, maximum=30.0, value=7.5, step=0.1)
             fix_sample = gr.inputs.Radio(['True', 'False'], type="value", default='False', label='Fix Sampling\n (Fix the random seed)')
             base_model = gr.inputs.Radio(['sd-v1-4.ckpt', 'anything-v4.0-pruned.ckpt'], type="value", default='sd-v1-4.ckpt', label='The base model you want to use')
         with gr.Column():
             result = gr.Gallery(label='Output', show_label=False, elem_id="gallery").style(grid=2, height='auto')
-        ips = [input_img, type_in, color_back, prompt, neg_prompt, fix_sample, scale, con_strength, base_model]
+        ips = [input_img, type_in, color_back, prompt, neg_prompt, pos_prompt, fix_sample, scale, con_strength, base_model]
     run_button.click(fn=process, inputs=ips, outputs=[result])
 
 block.launch(server_name='0.0.0.0')
