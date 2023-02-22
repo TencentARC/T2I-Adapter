@@ -61,5 +61,5 @@ model:
     cond_stage_config:
       target: ldm.modules.encoders.modules.WebUIFrozenCLIPEmebedder
       params:
-        version: /group/30042/yanzewu/share_bwtween_machines/cache/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff
+        version: models/clip-vit-large-patch14
         layer: last
