@@ -133,7 +133,7 @@ pose_model = init_pose_model(pose_config_mmcv, pose_checkpoint, device=device)
 W, H = 512, 512
 
 
-def process(input_img, type_in, prompt, neg_prompt, fix_sample, scale, con_strength, base_model):
+def process(input_img, type_in, prompt, neg_prompt, pos_prompt, fix_sample, scale, con_strength, base_model):
     global current_base
     if current_base != base_model:
         ckpt = os.path.join("models", base_model)
@@ -188,7 +188,7 @@ def process(input_img, type_in, prompt, neg_prompt, fix_sample, scale, con_stren
     im_pose = cv2.resize(im_pose,(W,H))
     
     with torch.no_grad():
-        c = model.get_learned_conditioning([prompt])
+        c = model.get_learned_conditioning([prompt + ', ' + pos_prompt])
         nc = model.get_learned_conditioning([neg_prompt])
         # extract condition features
         pose = img2tensor(im_pose, bgr2rgb=True, float32=True)/255.
@@ -238,16 +238,18 @@ with block:
             prompt = gr.Textbox(label="Prompt")
             neg_prompt = gr.Textbox(label="Negative Prompt",
             value='ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face')
+            pos_prompt = gr.Textbox(label="Positive Prompt",
+            value = 'crafted, elegant, meticulous, magnificent, maximum details, extremely hyper aesthetic, intricately detailed')
             with gr.Row():
                 type_in = gr.inputs.Radio(['Keypose', 'Image'], type="value", default='Image', label='Input Types\n (You can input an image or a keypose map)')
                 fix_sample = gr.inputs.Radio(['True', 'False'], type="value", default='False', label='Fix Sampling\n (Fix the random seed to produce a fixed output)')
             run_button = gr.Button(label="Run")
             con_strength = gr.Slider(label="Controling Strength (The guidance strength of the keypose to the result)", minimum=0, maximum=1, value=1, step=0.1)
-            scale = gr.Slider(label="Guidance Scale (Classifier free guidance)", minimum=0.1, maximum=30.0, value=9, step=0.1)
+            scale = gr.Slider(label="Guidance Scale (Classifier free guidance)", minimum=0.1, maximum=30.0, value=7.5, step=0.1)
             base_model = gr.inputs.Radio(['sd-v1-4.ckpt', 'anything-v4.0-pruned.ckpt'], type="value", default='sd-v1-4.ckpt', label='The base model you want to use')
         with gr.Column():
             result = gr.Gallery(label='Output', show_label=False, elem_id="gallery").style(grid=2, height='auto')
-        ips = [input_img, type_in, prompt, neg_prompt, fix_sample, scale, con_strength, base_model]
+        ips = [input_img, type_in, prompt, neg_prompt, pos_prompt, fix_sample, scale, con_strength, base_model]
     run_button.click(fn=process, inputs=ips, outputs=[result])
 
 block.launch(server_name='0.0.0.0')
