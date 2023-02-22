@@ -3,9 +3,8 @@
 import torch
 import numpy as np
 from tqdm import tqdm
-from functools import partial
-import copy
 from ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps, noise_like
+
 
 class PLMSSampler(object):
     def __init__(self, model, schedule="linear", **kwargs):
@@ -24,7 +23,7 @@ class PLMSSampler(object):
         if ddim_eta != 0:
             raise ValueError('ddim_eta must be 0 for PLMS')
         self.ddim_timesteps = make_ddim_timesteps(ddim_discr_method=ddim_discretize, num_ddim_timesteps=ddim_num_steps,
-                                                  num_ddpm_timesteps=self.ddpm_num_timesteps,verbose=verbose)
+                                                  num_ddpm_timesteps=self.ddpm_num_timesteps, verbose=verbose)
         alphas_cumprod = self.model.alphas_cumprod
         assert alphas_cumprod.shape[0] == self.ddpm_num_timesteps, 'alphas have to be defined for each timestep'
         to_torch = lambda x: x.clone().detach().to(torch.float32).to(self.model.device)
@@ -43,14 +42,14 @@ class PLMSSampler(object):
         # ddim sampling parameters
         ddim_sigmas, ddim_alphas, ddim_alphas_prev = make_ddim_sampling_parameters(alphacums=alphas_cumprod.cpu(),
                                                                                    ddim_timesteps=self.ddim_timesteps,
-                                                                                   eta=ddim_eta,verbose=verbose)
+                                                                                   eta=ddim_eta, verbose=verbose)
         self.register_buffer('ddim_sigmas', ddim_sigmas)
         self.register_buffer('ddim_alphas', ddim_alphas)
         self.register_buffer('ddim_alphas_prev', ddim_alphas_prev)
         self.register_buffer('ddim_sqrt_one_minus_alphas', np.sqrt(1. - ddim_alphas))
         sigmas_for_original_sampling_steps = ddim_eta * torch.sqrt(
             (1 - self.alphas_cumprod_prev) / (1 - self.alphas_cumprod) * (
-                        1 - self.alphas_cumprod / self.alphas_cumprod_prev))
+                    1 - self.alphas_cumprod / self.alphas_cumprod_prev))
         self.register_buffer('ddim_sigmas_for_original_num_steps', sigmas_for_original_sampling_steps)
 
     @torch.no_grad()
@@ -75,10 +74,8 @@ class PLMSSampler(object):
                log_every_t=100,
                unconditional_guidance_scale=1.,
                unconditional_conditioning=None,
-               features_adapter1=None,
-               features_adapter2=None,
-               mode = 'sketch',
-               con_strength=30,
+               features_adapter=None,
+               cond_strength=0.4,
                # this has to come in the same format as the conditioning, # e.g. as encoded tokens, ...
                **kwargs
                ):
@@ -112,10 +109,8 @@ class PLMSSampler(object):
                                                     log_every_t=log_every_t,
                                                     unconditional_guidance_scale=unconditional_guidance_scale,
                                                     unconditional_conditioning=unconditional_conditioning,
-                                                    features_adapter1=copy.deepcopy(features_adapter1),
-                                                    features_adapter2=copy.deepcopy(features_adapter2),
-                                                    mode = mode,
-                                                    con_strength = con_strength
+                                                    features_adapter=features_adapter,
+                                                    cond_strength=cond_strength
                                                     )
         return samples, intermediates
 
@@ -125,7 +120,8 @@ class PLMSSampler(object):
                       callback=None, timesteps=None, quantize_denoised=False,
                       mask=None, x0=None, img_callback=None, log_every_t=100,
                       temperature=1., noise_dropout=0., score_corrector=None, corrector_kwargs=None,
-                      unconditional_guidance_scale=1., unconditional_conditioning=None,features_adapter1=None, features_adapter2=None, mode='sketch', con_strength=30):
+                      unconditional_guidance_scale=1., unconditional_conditioning=None, features_adapter=None,
+                      cond_strength=0.4):
         device = self.model.betas.device
         b = shape[0]
         if x_T is None:
@@ -139,7 +135,7 @@ class PLMSSampler(object):
             timesteps = self.ddim_timesteps[:subset_end]
 
         intermediates = {'x_inter': [img], 'pred_x0': [img]}
-        time_range = list(reversed(range(0,timesteps))) if ddim_use_original_steps else np.flip(timesteps)
+        time_range = list(reversed(range(0, timesteps))) if ddim_use_original_steps else np.flip(timesteps)
         total_steps = timesteps if ddim_use_original_steps else timesteps.shape[0]
         print(f"Running PLMS Sampling with {total_steps} timesteps")
 
@@ -151,20 +147,10 @@ class PLMSSampler(object):
             ts = torch.full((b,), step, device=device, dtype=torch.long)
             ts_next = torch.full((b,), time_range[min(i + 1, len(time_range) - 1)], device=device, dtype=torch.long)
 
-            if mask is not None :#and index>=10:
+            if mask is not None:  # and index>=10:
                 assert x0 is not None
                 img_orig = self.model.q_sample(x0, ts)  # TODO: deterministic forward pass?
                 img = img_orig * mask + (1. - mask) * img
-
-            if mode == 'sketch':
-                if index<con_strength:
-                    features_adapter = None
-                else:
-                    features_adapter = features_adapter1
-            elif mode == 'mul':
-                features_adapter = [a1i*0.5 + a2i for a1i, a2i in zip(features_adapter1, features_adapter2)]
-            else:
-                features_adapter = features_adapter1
 
             outs = self.p_sample_plms(img, cond, ts, index=index, use_original_steps=ddim_use_original_steps,
                                       quantize_denoised=quantize_denoised, temperature=temperature,
@@ -172,7 +158,9 @@ class PLMSSampler(object):
                                       corrector_kwargs=corrector_kwargs,
                                       unconditional_guidance_scale=unconditional_guidance_scale,
                                       unconditional_conditioning=unconditional_conditioning,
-                                      old_eps=old_eps, t_next=ts_next, features_adapter=copy.deepcopy(features_adapter))
+                                      old_eps=old_eps, t_next=ts_next,
+                                      features_adapter=None if index < int(
+                                          (1 - cond_strength) * total_steps) else features_adapter)
 
             img, pred_x0, e_t = outs
             old_eps.append(e_t)
@@ -190,17 +178,18 @@ class PLMSSampler(object):
     @torch.no_grad()
     def p_sample_plms(self, x, c, t, index, repeat_noise=False, use_original_steps=False, quantize_denoised=False,
                       temperature=1., noise_dropout=0., score_corrector=None, corrector_kwargs=None,
-                      unconditional_guidance_scale=1., unconditional_conditioning=None, old_eps=None, t_next=None, features_adapter=None):
+                      unconditional_guidance_scale=1., unconditional_conditioning=None, old_eps=None, t_next=None,
+                      features_adapter=None):
         b, *_, device = *x.shape, x.device
 
         def get_model_output(x, t):
             if unconditional_conditioning is None or unconditional_guidance_scale == 1.:
-                e_t = self.model.apply_model(x, t, c, copy.deepcopy(features_adapter))
+                e_t = self.model.apply_model(x, t, c, features_adapter=features_adapter)
             else:
                 x_in = torch.cat([x] * 2)
                 t_in = torch.cat([t] * 2)
                 c_in = torch.cat([unconditional_conditioning, c])
-                e_t_uncond, e_t = self.model.apply_model(x_in, t_in, c_in, copy.deepcopy(features_adapter)).chunk(2)
+                e_t_uncond, e_t = self.model.apply_model(x_in, t_in, c_in, features_adapter=features_adapter).chunk(2)
                 e_t = e_t_uncond + unconditional_guidance_scale * (e_t - e_t_uncond)
 
             if score_corrector is not None:
@@ -219,14 +208,14 @@ class PLMSSampler(object):
             a_t = torch.full((b, 1, 1, 1), alphas[index], device=device)
             a_prev = torch.full((b, 1, 1, 1), alphas_prev[index], device=device)
             sigma_t = torch.full((b, 1, 1, 1), sigmas[index], device=device)
-            sqrt_one_minus_at = torch.full((b, 1, 1, 1), sqrt_one_minus_alphas[index],device=device)
+            sqrt_one_minus_at = torch.full((b, 1, 1, 1), sqrt_one_minus_alphas[index], device=device)
 
             # current prediction for x_0
             pred_x0 = (x - sqrt_one_minus_at * e_t) / a_t.sqrt()
             if quantize_denoised:
                 pred_x0, _, *_ = self.model.first_stage_model.quantize(pred_x0)
             # direction pointing to x_t
-            dir_xt = (1. - a_prev - sigma_t**2).sqrt() * e_t
+            dir_xt = (1. - a_prev - sigma_t ** 2).sqrt() * e_t
             noise = sigma_t * noise_like(x.shape, device, repeat_noise) * temperature
             if noise_dropout > 0.:
                 noise = torch.nn.functional.dropout(noise, p=noise_dropout)

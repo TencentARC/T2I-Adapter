@@ -1,9 +1,8 @@
-from load_json import load_json
 import cv2
 import torch
 import os
 from basicsr.utils import img2tensor, tensor2img, scandir, get_time_str, get_root_logger, get_env_info
-from dataset_coco import dataset_coco_mask_color
+from ldm.data.dataset_coco import dataset_coco_mask_color
 import argparse
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.plms import PLMSSampler
@@ -361,7 +360,7 @@ if __name__ == '__main__':
                                                         unconditional_conditioning=model.module.get_learned_conditioning(opt.n_samples * [""]),
                                                         eta=opt.ddim_eta,
                                                         x_T=None,
-                                                        features_adapter1=features_adapter)
+                                                        features_adapter=features_adapter)
                     x_samples_ddim = model.module.decode_first_stage(samples_ddim)
                     x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
                     x_samples_ddim = x_samples_ddim.cpu().permute(0, 2, 3, 1).numpy()

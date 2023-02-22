@@ -4,7 +4,7 @@ from pytorch_lightning import seed_everything
 from ldm.models.diffusion.plms import PLMSSampler
 from ldm.modules.encoders.adapter import Adapter
 from ldm.util import instantiate_from_config
-from model_edge import pidinet
+from ldm.modules.structure_condition.model_edge import pidinet
 import gradio as gr
 from omegaconf import OmegaConf
 import mmcv
@@ -120,9 +120,9 @@ class Model_all:
         self.model_pose = Adapter(cin=int(3*64), channels=[320, 640, 1280, 1280][:4], nums_rb=2, ksize=1, sk=True, use_conv=False).to(device)
         self.model_pose.load_state_dict(torch.load("models/t2iadapter_keypose_sd14v1.pth", map_location=device))
         ## mmpose
-        det_config = 'models/faster_rcnn_r50_fpn_coco.py' 
+        det_config = 'configs/mm/faster_rcnn_r50_fpn_coco.py' 
         det_checkpoint = 'models/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth'
-        pose_config = 'models/hrnet_w48_coco_256x192.py'
+        pose_config = 'configs/mm/hrnet_w48_coco_256x192.py'
         pose_checkpoint = 'models/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth'
         self.det_cat_id = 1
         self.bbox_thr = 0.2
@@ -142,8 +142,25 @@ class Model_all:
                         [0, 255, 0], [255, 128, 0], [51, 153, 255], [51, 153, 255], [51, 153, 255], [51, 153, 255],
                         [51, 153, 255], [51, 153, 255], [51, 153, 255]]
 
+    def load_vae(self):
+        vae_sd = torch.load(os.path.join('models', 'anything-v4.0.vae.pt'), map_location="cpu")
+        sd = vae_sd["state_dict"]
+        self.base_model.first_stage_model.load_state_dict(sd, strict=False)
+
+    def process_input(self, input_img):
+        h, w = input_img.shape[:2]
+        if w > h:
+            W = int(w * 512 / h)
+            H = 512
+        else:
+            H = int(h * 512 / w)
+            W = 512
+        W, H = map(lambda x: x - x % 64, (W, H))
+        input_img = cv2.resize(input_img, (W, H))
+        return input_img
+
     @torch.no_grad()
-    def process_sketch(self, input_img, type_in, color_back, prompt, neg_prompt, pos_prompt, fix_sample, scale, con_strength, base_model):
+    def process_sketch(self, input_img, type_in, color_back, prompt, neg_prompt, pos_prompt, fix_sample, scale, cond_strength, base_model):
         if self.current_base_sketch != base_model:
             ckpt = os.path.join("models", base_model)
             pl_sd = torch.load(ckpt, map_location="cpu")
@@ -152,13 +169,16 @@ class Model_all:
             else:
                 sd = pl_sd
             self.base_model.load_state_dict(sd, strict=False)
+            if 'anything' in base_model.lower():
+                self.load_vae()
             self.current_base_sketch = base_model
             # del sd
             # del pl_sd
-        con_strength = int((1-con_strength)*50)
+        cond_strength = int((1-cond_strength)*50)
         if fix_sample == 'True':
             seed_everything(42)
-        im = cv2.resize(input_img,(512,512))
+        im = self.process_input(input_img)
+        h, w = im.shape[:2]
 
         if type_in == 'Sketch':
             if color_back == 'White':
@@ -184,7 +204,7 @@ class Model_all:
         c = self.base_model.get_learned_conditioning([prompt+', '+pos_prompt])
         nc = self.base_model.get_learned_conditioning([neg_prompt])
         features_adapter = self.model_sketch(im.to(self.device))
-        shape = [4, 64, 64]
+        shape = [4, h//8, w//8]
         
         # save gpu memory
         self.model_sketch = self.model_sketch.cpu()
@@ -201,9 +221,9 @@ class Model_all:
                                         unconditional_conditioning=nc,
                                         eta=0.0,
                                         x_T=None,
-                                        features_adapter1=features_adapter,
+                                        features_adapter=features_adapter,
                                         mode = 'sketch',
-                                        con_strength = con_strength)
+                                        cond_strength = cond_strength)
         # save gpu memory
         self.base_model.first_stage_model = self.base_model.first_stage_model.cuda()
 
@@ -217,7 +237,7 @@ class Model_all:
         return [im_edge, x_samples_ddim]
 
     @torch.no_grad()
-    def process_draw(self, input_img, prompt, neg_prompt, pos_prompt, fix_sample, scale, con_strength, base_model):
+    def process_draw(self, input_img, prompt, neg_prompt, pos_prompt, fix_sample, scale, cond_strength, base_model):
         if self.current_base_sketch != base_model:
             ckpt = os.path.join("models", base_model)
             pl_sd = torch.load(ckpt, map_location="cpu")
@@ -226,8 +246,10 @@ class Model_all:
             else:
                 sd = pl_sd
             self.base_model.load_state_dict(sd, strict=False) #load_model_from_config(config, os.path.join("models", base_model)).to(device)
+            if 'anything' in base_model.lower():
+                self.load_vae()
             self.current_base_sketch = base_model
-        con_strength = int((1-con_strength)*50)
+        cond_strength = int((1-cond_strength)*50)
         if fix_sample == 'True':
             seed_everything(42)
         input_img = input_img['mask']
@@ -270,9 +292,9 @@ class Model_all:
                                         unconditional_conditioning=nc,
                                         eta=0.0,
                                         x_T=None,
-                                        features_adapter1=features_adapter,
+                                        features_adapter=features_adapter,
                                         mode = 'sketch',
-                                        con_strength = con_strength)
+                                        cond_strength = cond_strength)
         
         # save gpu memory
         self.base_model.first_stage_model = self.base_model.first_stage_model.cuda()
@@ -287,7 +309,7 @@ class Model_all:
         return [im_edge, x_samples_ddim]
 
     @torch.no_grad()
-    def process_keypose(self, input_img, type_in, prompt, neg_prompt, pos_prompt, fix_sample, scale, con_strength, base_model):
+    def process_keypose(self, input_img, type_in, prompt, neg_prompt, pos_prompt, fix_sample, scale, cond_strength, base_model):
         if self.current_base_pose != base_model:
             ckpt = os.path.join("models", base_model)
             pl_sd = torch.load(ckpt, map_location="cpu")
@@ -296,11 +318,14 @@ class Model_all:
             else:
                 sd = pl_sd
             self.base_model.load_state_dict(sd, strict=False)
+            if 'anything' in base_model.lower():
+                self.load_vae()
             self.current_base_pose = base_model
-        con_strength = int((1-con_strength)*50)
+        cond_strength = int((1-cond_strength)*50)
         if fix_sample == 'True':
             seed_everything(42)
-        im = cv2.resize(input_img,(512,512))
+        im = self.process_input(input_img)
+        h, w = im.shape[:2]
 
         if type_in == 'Keypose':
             im_pose = im.copy()
@@ -338,7 +363,7 @@ class Model_all:
                 pose_link_color=self.pose_link_color,
                 radius=2,
                 thickness=2)
-        im_pose = cv2.resize(im_pose,(512,512))
+        im_pose = cv2.resize(im_pose,(w,h))
         
         # save gpu memory
         self.base_model.model = self.base_model.model.cpu()
@@ -358,7 +383,7 @@ class Model_all:
         self.base_model.cond_stage_model = self.base_model.cond_stage_model.cpu()
         self.base_model.model = self.base_model.model.cuda()
 
-        shape = [4, 64, 64]
+        shape = [4, h//8, w//8]
 
         # sampling
         samples_ddim, _ = self.sampler.sample(S=50,
@@ -370,9 +395,9 @@ class Model_all:
                                         unconditional_conditioning=nc,
                                         eta=0.0,
                                         x_T=None,
-                                        features_adapter1=features_adapter,
+                                        features_adapter=features_adapter,
                                         mode = 'sketch',
-                                        con_strength = con_strength)
+                                        cond_strength = cond_strength)
 
         # save gpu memory
         self.base_model.first_stage_model = self.base_model.first_stage_model.cuda()

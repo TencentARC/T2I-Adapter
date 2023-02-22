@@ -15,15 +15,14 @@ from basicsr.utils.options import copy_opt_file, dict2str
 from omegaconf import OmegaConf
 from PIL import Image
 
-from dataset_coco import dataset_coco_mask_color
+from ldm.data.dataset_coco import dataset_coco_mask_color
 from dist_util import get_bare_model, get_dist_info, init_dist, master_only
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.dpm_solver import DPMSolverSampler
 from ldm.models.diffusion.plms import PLMSSampler
 from ldm.modules.encoders.adapter import Adapter
 from ldm.util import instantiate_from_config
-from load_json import load_json
-from model_edge import pidinet
+from ldm.modules.structure_condition.model_edge import pidinet
 
 
 def load_model_from_config(config, ckpt, verbose=False):
@@ -388,7 +387,7 @@ if __name__ == '__main__':
                                                         unconditional_conditioning=model.module.get_learned_conditioning(opt.n_samples * [""]),
                                                         eta=opt.ddim_eta,
                                                         x_T=None,
-                                                        features_adapter1=features_adapter)
+                                                        features_adapter=features_adapter)
                     x_samples_ddim = model.module.decode_first_stage(samples_ddim)
                     x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
                     x_samples_ddim = x_samples_ddim.cpu().permute(0, 2, 3, 1).numpy()
