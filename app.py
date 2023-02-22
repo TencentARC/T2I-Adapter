@@ -1,9 +1,16 @@
+import os
+# os.system('pip3 install openmim')
+os.system('mim install mmcv-full==1.7.0')
+# os.system('pip3 install mmpose')
+# os.system('pip3 install mmdet')
+# os.system('pip3 install gradio==3.19.1')
+#os.system('pip3 install psutil')
+
 from demo.model import Model_all
 import gradio as gr
 from demo.demos import create_demo_keypose, create_demo_sketch, create_demo_draw
 import torch
 import subprocess
-import os
 import shlex
 from huggingface_hub import hf_hub_url
 
@@ -18,20 +25,20 @@ urls_mmpose = [
 ]
 if os.path.exists('models') == False:
     os.mkdir('models')
-# for repo in urls:
-#     files = urls[repo]
-#     for file in files:
-#         url = hf_hub_url(repo, file)
-#         name_ckp = url.split('/')[-1]
-#         save_path = os.path.join('models',name_ckp)
-#         if os.path.exists(save_path) == False:
-#             subprocess.run(shlex.split(f'wget {url} -O {save_path}'))
-#
-# for url in urls_mmpose:
-#     name_ckp = url.split('/')[-1]
-#     save_path = os.path.join('models',name_ckp)
-#     if os.path.exists(save_path) == False:
-#         subprocess.run(shlex.split(f'wget {url} -O {save_path}'))
+for repo in urls:
+    files = urls[repo]
+    for file in files:
+        url = hf_hub_url(repo, file)
+        name_ckp = url.split('/')[-1]
+        save_path = os.path.join('models',name_ckp)
+        if os.path.exists(save_path) == False:
+            subprocess.run(shlex.split(f'wget {url} -O {save_path}'))
+
+for url in urls_mmpose:
+    name_ckp = url.split('/')[-1]
+    save_path = os.path.join('models',name_ckp)
+    if os.path.exists(save_path) == False:
+        subprocess.run(shlex.split(f'wget {url} -O {save_path}'))
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model = Model_all(device)
@@ -56,4 +63,6 @@ with gr.Blocks(css='style.css') as demo:
         with gr.TabItem('Draw'):
             create_demo_draw(model.process_draw)
 
-demo.launch(server_name='0.0.0.0', server_port=41143)
+# demo.queue(api_open=False).launch(server_name='0.0.0.0')
+# demo.queue(show_api=False, enable_queue=False).launch(server_name='0.0.0.0')
+demo.queue().launch(debug=True, server_name='0.0.0.0')
