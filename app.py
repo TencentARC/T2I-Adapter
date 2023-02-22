@@ -1,9 +1,16 @@
+import os
+# os.system('pip3 install openmim')
+os.system('mim install mmcv-full==1.7.0')
+# os.system('pip3 install mmpose')
+# os.system('pip3 install mmdet')
+# os.system('pip3 install gradio==3.19.1')
+#os.system('pip3 install psutil')
+
 from demo.model import Model_all
 import gradio as gr
 from demo.demos import create_demo_keypose, create_demo_sketch, create_demo_draw
 import torch
 import subprocess
-import os
 import shlex
 from huggingface_hub import hf_hub_url
 
@@ -56,4 +63,6 @@ with gr.Blocks(css='style.css') as demo:
         with gr.TabItem('Draw'):
             create_demo_draw(model.process_draw)
 
-demo.queue(api_open=False).launch(server_name='0.0.0.0')
+# demo.queue(api_open=False).launch(server_name='0.0.0.0')
+# demo.queue(show_api=False, enable_queue=False).launch(server_name='0.0.0.0')
+demo.queue().launch(debug=True, server_name='0.0.0.0')
