@@ -4,7 +4,7 @@
 
 <div align="center">
 
-⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test)
+⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test) **|** 💥 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
 
 </div>
 
