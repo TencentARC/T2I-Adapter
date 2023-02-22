@@ -149,6 +149,11 @@ class Model_all:
                                 [0, 255, 0], [255, 128, 0], [51, 153, 255], [51, 153, 255], [51, 153, 255],
                                 [51, 153, 255],
                                 [51, 153, 255], [51, 153, 255], [51, 153, 255]]
+    
+    def load_vae(self):
+        vae_sd = torch.load(os.path.join('models', 'anything-v4.0.vae.pt'), map_location="cuda")
+        sd = vae_sd["state_dict"]
+        self.base_model.first_stage_model.load_state_dict(sd, strict=False)
 
     @torch.no_grad()
     def process_sketch(self, input_img, type_in, color_back, prompt, neg_prompt, pos_prompt, fix_sample, scale,
@@ -160,12 +165,11 @@ class Model_all:
                 sd = pl_sd["state_dict"]
             else:
                 sd = pl_sd
-            # self.base_model = self.base_model.cpu()
             self.base_model.load_state_dict(sd, strict=False)
-            # self.base_model = self.base_model.cuda()
             self.current_base = base_model
-            # del sd
-            # del pl_sd
+            if 'anything' in base_model.lower():
+                self.load_vae()
+
         con_strength = int((1 - con_strength) * 50)
         if fix_sample == 'True':
             seed_everything(42)
@@ -185,22 +189,11 @@ class Model_all:
             im = im.float()
             im_edge = tensor2img(im)
 
-        # # save gpu memory
-        # self.base_model.model = self.base_model.model.cpu()
-        # self.model_sketch = self.model_sketch.cuda()
-        # self.base_model.first_stage_model = self.base_model.first_stage_model.cpu()
-        # self.base_model.cond_stage_model = self.base_model.cond_stage_model.cuda()
-
         # extract condition features
         c = self.base_model.get_learned_conditioning([prompt + ', ' + pos_prompt])
         nc = self.base_model.get_learned_conditioning([neg_prompt])
         features_adapter = self.model_sketch(im.to(self.device))
         shape = [4, 64, 64]
-
-        # # save gpu memory
-        # self.model_sketch = self.model_sketch.cpu()
-        # self.base_model.cond_stage_model = self.base_model.cond_stage_model.cpu()
-        # self.base_model.model = self.base_model.model.cuda()
 
         # sampling
         samples_ddim, _ = self.sampler.sample(S=50,
@@ -215,8 +208,6 @@ class Model_all:
                                               features_adapter1=features_adapter,
                                               mode='sketch',
                                               con_strength=con_strength)
-        # # save gpu memory
-        # self.base_model.first_stage_model = self.base_model.first_stage_model.cuda()
 
         x_samples_ddim = self.base_model.decode_first_stage(samples_ddim)
         x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
@@ -236,10 +227,11 @@ class Model_all:
                 sd = pl_sd["state_dict"]
             else:
                 sd = pl_sd
-            # self.base_model = self.base_model.cpu()
             self.base_model.load_state_dict(sd, strict=False)
-            # self.base_model = self.base_model.cuda()
             self.current_base = base_model
+            if 'anything' in base_model.lower():
+                self.load_vae()
+
         con_strength = int((1 - con_strength) * 50)
         if fix_sample == 'True':
             seed_everything(42)
@@ -250,28 +242,16 @@ class Model_all:
         im = im.clip(0, 255).astype(np.uint8)
         im = cv2.resize(im, (512, 512))
 
-        # im = 255-im
         im_edge = im.copy()
         im = img2tensor(im)[0].unsqueeze(0).unsqueeze(0) / 255.
         im = im > 0.5
         im = im.float()
-
-        # # save gpu memory
-        # self.base_model.model = self.base_model.model.cpu()
-        # self.model_sketch = self.model_sketch.cuda()
-        # self.base_model.first_stage_model = self.base_model.first_stage_model.cpu()
-        # self.base_model.cond_stage_model = self.base_model.cond_stage_model.cuda()
 
         # extract condition features
         c = self.base_model.get_learned_conditioning([prompt + ', ' + pos_prompt])
         nc = self.base_model.get_learned_conditioning([neg_prompt])
         features_adapter = self.model_sketch(im.to(self.device))
         shape = [4, 64, 64]
-
-        # # save gpu memory
-        # self.model_sketch = self.model_sketch.cpu()
-        # self.base_model.cond_stage_model = self.base_model.cond_stage_model.cpu()
-        # self.base_model.model = self.base_model.model.cuda()
 
         # sampling
         samples_ddim, _ = self.sampler.sample(S=50,
@@ -286,9 +266,6 @@ class Model_all:
                                               features_adapter1=features_adapter,
                                               mode='sketch',
                                               con_strength=con_strength)
-
-        # # save gpu memory
-        # self.base_model.first_stage_model = self.base_model.first_stage_model.cuda()
 
         x_samples_ddim = self.base_model.decode_first_stage(samples_ddim)
         x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
@@ -309,10 +286,11 @@ class Model_all:
                 sd = pl_sd["state_dict"]
             else:
                 sd = pl_sd
-            # self.base_model = self.base_model.cpu()
             self.base_model.load_state_dict(sd, strict=False)
-            # self.base_model = self.base_model.cuda()
             self.current_base = base_model
+            if 'anything' in base_model.lower():
+                self.load_vae()
+
         con_strength = int((1 - con_strength) * 50)
         if fix_sample == 'True':
             seed_everything(42)
@@ -356,23 +334,12 @@ class Model_all:
                 thickness=2)
         im_pose = cv2.resize(im_pose, (512, 512))
 
-        # # save gpu memory
-        # self.base_model.model = self.base_model.model.cpu()
-        # self.model_pose = self.model_pose.cuda()
-        # self.base_model.first_stage_model = self.base_model.first_stage_model.cpu()
-        # self.base_model.cond_stage_model = self.base_model.cond_stage_model.cuda()
-
         # extract condition features
         c = self.base_model.get_learned_conditioning([prompt + ', ' + pos_prompt])
         nc = self.base_model.get_learned_conditioning([neg_prompt])
         pose = img2tensor(im_pose, bgr2rgb=True, float32=True) / 255.
         pose = pose.unsqueeze(0)
         features_adapter = self.model_pose(pose.to(self.device))
-
-        # # save gpu memory
-        # self.model_pose = self.model_pose.cpu()
-        # self.base_model.cond_stage_model = self.base_model.cond_stage_model.cpu()
-        # self.base_model.model = self.base_model.model.cuda()
 
         shape = [4, 64, 64]
 
@@ -389,9 +356,6 @@ class Model_all:
                                               features_adapter1=features_adapter,
                                               mode='sketch',
                                               con_strength=con_strength)
-
-        # # save gpu memory
-        # self.base_model.first_stage_model = self.base_model.first_stage_model.cuda()
 
         x_samples_ddim = self.base_model.decode_first_stage(samples_ddim)
         x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)

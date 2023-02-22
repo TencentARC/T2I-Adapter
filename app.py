@@ -17,7 +17,7 @@ from huggingface_hub import hf_hub_url
 urls = {
     'TencentARC/T2I-Adapter':['models/t2iadapter_keypose_sd14v1.pth', 'models/t2iadapter_seg_sd14v1.pth', 'models/t2iadapter_sketch_sd14v1.pth'],
     'CompVis/stable-diffusion-v-1-4-original':['sd-v1-4.ckpt'],
-    'andite/anything-v4.0':['anything-v4.0-pruned.ckpt'],
+    'andite/anything-v4.0':['anything-v4.0-pruned.ckpt', 'anything-v4.0.vae.pt'],
 }
 urls_mmpose = [
     'https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth',
