@@ -18,12 +18,11 @@ def create_demo_keypose(process):
     with gr.Blocks() as demo:
         with gr.Row():
             gr.Markdown('T2I-Adapter (Keypose)')
-        with gr.Row():
-            with gr.Column():
-                gr.Textbox(value="Hello Memory")
-            with gr.Column():
-                gr.JSON(get_system_memory, every=1)
-
+        # with gr.Row():
+        #     with gr.Column():
+        #         gr.Textbox(value="Hello Memory")
+        #     with gr.Column():
+        #         gr.JSON(get_system_memory, every=1)
         with gr.Row():
             with gr.Column():
                 input_img = gr.Image(source='upload', type="numpy")
