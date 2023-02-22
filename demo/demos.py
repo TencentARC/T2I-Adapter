@@ -1,14 +1,29 @@
 import gradio as gr
 import numpy as np
+import psutil
 
 def create_map():
     return np.zeros(shape=(512, 1024), dtype=np.uint8)+255
+
+def get_system_memory():
+    memory = psutil.virtual_memory()
+    memory_percent = memory.percent
+    memory_used = memory.used / (1024.0 ** 3)
+    memory_total = memory.total / (1024.0 ** 3)
+    return {"percent": f"{memory_percent}%", "used": f"{memory_used:.3f}GB", "total": f"{memory_total:.3f}GB"}
+
 
 
 def create_demo_keypose(process):
     with gr.Blocks() as demo:
         with gr.Row():
             gr.Markdown('T2I-Adapter (Keypose)')
+        with gr.Row():
+            with gr.Column():
+                gr.Textbox(value="Hello Memory")
+            with gr.Column():
+                gr.JSON(get_system_memory, every=1)
+
         with gr.Row():
             with gr.Column():
                 input_img = gr.Image(source='upload', type="numpy")
@@ -64,7 +79,7 @@ def create_demo_draw(process):
             with gr.Column():
                 create_button = gr.Button(label="Start", value='Hand-free drawing')
                 input_img = gr.Image(source='upload', type="numpy",tool='sketch')
-                create_button.click(fn=create_map, outputs=[input_img])
+                create_button.click(fn=create_map, outputs=[input_img], queue=False)
                 prompt = gr.Textbox(label="Prompt")
                 neg_prompt = gr.Textbox(label="Negative Prompt",
                 value='ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face')
