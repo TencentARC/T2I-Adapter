@@ -15,7 +15,7 @@ from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.modules.encoders.adapter import Adapter
 from ldm.util import load_model_from_config, resize_numpy_image, fix_cond_shapes
 
-condition_types = ['sketch', 'seg', 'pose']
+condition_types = ['sketch', 'seg', 'pose', 'depth']
 
 torch.set_grad_enabled(False)
 
@@ -175,12 +175,32 @@ def parse_args():
     parser.add_argument(
         "--pose_ckpt",
         type=str,
-        default="models/t2iadapter_pose_sd14v1.pth"
+        default="models/t2iadapter_keypose_sd14v1.pth"
     )
     parser.add_argument(
         "--pose_type_in",
         type=str,
         default="pose"
+    )
+    parser.add_argument(
+        "--depth_cond_path",
+        type=str,
+        default=None,
+    )
+    parser.add_argument(
+        "--depth_cond_weight",
+        type=float,
+        default=1.0,
+    )
+    parser.add_argument(
+        "--depth_ckpt",
+        type=str,
+        default="models/t2iadapter_depth_sd14v1.pth",
+    )
+    parser.add_argument(
+        "--depth_type_in",
+        type=str,
+        default="depth"
     )
     opt = parser.parse_args()
     return opt
@@ -237,6 +257,25 @@ def get_cond_pose(opt, cond_path, cond_type_in, cond_preprocess):
         raise NotImplementedError
 
     return pose
+
+def get_cond_depth(opt, cond_path, cond_type_in, cond_preprocess):
+    depth = cv2.imread(cond_path)
+    depth = resize_numpy_image(depth, max_resolution=opt.max_resolution)
+    opt.H, opt.W = depth.shape[:2]
+    if cond_type_in == 'depth':
+        depth = img2tensor(depth).unsqueeze(0) / 255.
+        depth = depth.to(opt.device)
+    else:
+        if 'depth' not in cond_preprocess:
+            from ldm.modules.structure_condition.midas.api import MiDaSInference
+            cond_preprocess['depth'] = MiDaSInference(model_type='dpt_hybrid').to(opt.device)
+        depth = img2tensor(depth).unsqueeze(0) / 127.5 - 1.0
+        depth = cond_preprocess['depth'](depth.to(opt.device)).repeat(1, 3, 1, 1)
+        depth -= torch.min(depth)
+        depth /= torch.max(depth)
+        raise NotImplementedError
+
+    return depth
 
 
 def get_cond_inputs(opt, cond_preprocess):

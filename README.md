@@ -58,6 +58,11 @@ pip install -r requirements.txt
 [//]: # ()
 [//]: # (> python app.py)
 
+#### **Depth Adapter**
+```bash
+python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely detailed" --path_cond examples/depth/sd.png --ckpt models/v1-5-pruned-emaonly.ckpt --type_in image --sampler ddim --scale 9 --cond_weight 1.5
+```
+
 #### **Sketch Adapter**
 
 - Sketch to Image Generation
