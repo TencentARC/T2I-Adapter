@@ -1,4 +1,4 @@
-# Model Zoo
+# Adapter Zoo
 
 You can download the adapters from <https://huggingface.co/TencentARC/T2I-Adapter/tree/main>
 
