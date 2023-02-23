@@ -187,6 +187,16 @@ def main(opt):
                        use_conv=False).to(device)
     model_ad.load_state_dict(torch.load(opt.ckpt_ad))
 
+    # det model
+    if opt.type_in == 'image':
+        import mmcv
+        from mmdet.apis import inference_detector, init_detector
+        from mmpose.apis import inference_top_down_pose_model, init_pose_model, process_mmdet_results
+        det_config_mmcv = mmcv.Config.fromfile(opt.det_config)
+        det_model = init_detector(det_config_mmcv, opt.det_checkpoint, device=device)
+        pose_config_mmcv = mmcv.Config.fromfile(opt.pose_config)
+        pose_model = init_pose_model(pose_config_mmcv, opt.pose_checkpoint, device=device)
+
     # sampler
     if opt.sampler == 'plms':
         sampler = PLMSSampler(model)
@@ -200,24 +210,15 @@ def main(opt):
     seed_everything(opt.seed)
 
     with torch.no_grad(), \
-            model.ema_scope(), \
-            autocast('cuda'):
+            model.ema_scope():
         for v_idx in range(opt.n_samples):
             if opt.type_in == 'pose':
                 pose = cv2.imread(opt.path_cond)
                 pose = resize_numpy_image(pose, max_resolution=opt.max_resolution)
             elif opt.type_in == 'image':
-                import mmcv
-                from mmdet.apis import inference_detector, init_detector
-                from mmpose.apis import inference_top_down_pose_model, init_pose_model, process_mmdet_results
                 image = cv2.imread(opt.path_cond)
                 image = resize_numpy_image(image, max_resolution=opt.max_resolution)
-                det_config_mmcv = mmcv.Config.fromfile(opt.det_config)
-                det_model = init_detector(det_config_mmcv, opt.det_checkpoint, device=device)
-                pose_config_mmcv = mmcv.Config.fromfile(opt.pose_config)
-                pose_model = init_pose_model(pose_config_mmcv, opt.pose_checkpoint, device=device)
-
-                mmdet_results = inference_detector(det_model, opt.path_cond)
+                mmdet_results = inference_detector(det_model, image)
                 # keep the person class bounding boxes.
                 person_results = process_mmdet_results(mmdet_results, opt.det_cat_id)
 
@@ -229,7 +230,7 @@ def main(opt):
                 output_layer_names = None
                 pose_results, returned_outputs = inference_top_down_pose_model(
                     pose_model,
-                    opt.path_cond,
+                    image,
                     person_results,
                     bbox_thr=opt.bbox_thr,
                     format='xyxy',
@@ -249,42 +250,43 @@ def main(opt):
 
             opt.H, opt.W = pose.shape[:2]
 
-            c = model.get_learned_conditioning([opt.prompt])
-            if opt.scale != 1.0:
-                uc = model.get_learned_conditioning([opt.neg_prompt])
-            else:
-                uc = None
-            c, uc = fix_cond_shapes(model, c, uc)
+            with autocast('cuda'):
+                c = model.get_learned_conditioning([opt.prompt])
+                if opt.scale != 1.0:
+                    uc = model.get_learned_conditioning([opt.neg_prompt])
+                else:
+                    uc = None
+                c, uc = fix_cond_shapes(model, c, uc)
 
-            base_count = len(os.listdir(opt.outdir)) // 2
+                base_count = len(os.listdir(opt.outdir)) // 2
 
-            cv2.imwrite(os.path.join(opt.outdir, f'{base_count:05}_edge.png'), pose)
+                cv2.imwrite(os.path.join(opt.outdir, f'{base_count:05}_pose.png'), pose)
 
-            pose = img2tensor(pose, bgr2rgb=True, float32=True) / 255.
-            pose = pose.unsqueeze(0)
+                pose = img2tensor(pose, bgr2rgb=True, float32=True) / 255.
+                pose = pose.unsqueeze(0)
 
-            features_adapter = model_ad(pose.to(device))
+                features_adapter = model_ad(pose.to(device))
 
-            shape = [opt.C, opt.H // opt.f, opt.W // opt.f]
+                shape = [opt.C, opt.H // opt.f, opt.W // opt.f]
 
-            samples_ddim, _ = sampler.sample(S=opt.steps,
-                                             conditioning=c,
-                                             batch_size=1,
-                                             shape=shape,
-                                             verbose=False,
-                                             unconditional_guidance_scale=opt.scale,
-                                             unconditional_conditioning=uc,
-                                             x_T=None,
-                                             features_adapter=features_adapter,
-                                             cond_tau=opt.cond_tau
-                                             )
+                samples_ddim, _ = sampler.sample(S=opt.steps,
+                                                 conditioning=c,
+                                                 batch_size=1,
+                                                 shape=shape,
+                                                 verbose=False,
+                                                 unconditional_guidance_scale=opt.scale,
+                                                 unconditional_conditioning=uc,
+                                                 x_T=None,
+                                                 features_adapter=features_adapter,
+                                                 cond_tau=opt.cond_tau
+                                                 )
 
-            x_samples_ddim = model.decode_first_stage(samples_ddim)
-            x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
-            x_samples_ddim = x_samples_ddim.permute(0, 2, 3, 1)[0].cpu().numpy()
-            x_sample = 255. * x_samples_ddim
-            x_sample = Image.fromarray(x_sample.astype(np.uint8))
-            x_sample.save(os.path.join(opt.outdir, f'{base_count:05}_result.png'))
+                x_samples_ddim = model.decode_first_stage(samples_ddim)
+                x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
+                x_samples_ddim = x_samples_ddim.permute(0, 2, 3, 1)[0].cpu().numpy()
+                x_sample = 255. * x_samples_ddim
+                x_sample = Image.fromarray(x_sample.astype(np.uint8))
+                x_sample.save(os.path.join(opt.outdir, f'{base_count:05}_result.png'))
 
 
 if __name__ == '__main__':
