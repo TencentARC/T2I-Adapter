@@ -76,7 +76,7 @@ class DDIMSampler(object):
                unconditional_guidance_scale=1.,
                unconditional_conditioning=None,
                features_adapter=None,
-               cond_strength=0.4,
+               cond_tau=0.4,
                # this has to come in the same format as the conditioning, # e.g. as encoded tokens, ...
                **kwargs
                ):
@@ -110,7 +110,7 @@ class DDIMSampler(object):
                                                     unconditional_guidance_scale=unconditional_guidance_scale,
                                                     unconditional_conditioning=unconditional_conditioning,
                                                     features_adapter=features_adapter,
-                                                    cond_strength=cond_strength,
+                                                    cond_tau=cond_tau,
                                                     )
         return samples, intermediates
 
@@ -121,7 +121,7 @@ class DDIMSampler(object):
                       mask=None, x0=None, img_callback=None, log_every_t=100,
                       temperature=1., noise_dropout=0., score_corrector=None, corrector_kwargs=None,
                       unconditional_guidance_scale=1., unconditional_conditioning=None, features_adapter=None,
-                      cond_strength=0.4):
+                      cond_tau=0.4):
         device = self.model.betas.device
         b = shape[0]
         if x_T is None:
@@ -158,7 +158,7 @@ class DDIMSampler(object):
                                       unconditional_guidance_scale=unconditional_guidance_scale,
                                       unconditional_conditioning=unconditional_conditioning,
                                       features_adapter=None if index < int(
-                                          (1 - cond_strength) * total_steps) else features_adapter)
+                                          (1 - cond_tau) * total_steps) else features_adapter)
             img, pred_x0 = outs
             if callback: callback(i)
             if img_callback: img_callback(pred_x0, i)

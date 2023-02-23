@@ -13,7 +13,7 @@ from pytorch_lightning import seed_everything
 from ldm.models.diffusion.plms import PLMSSampler
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.modules.encoders.adapter import Adapter
-from ldm.util import load_model_from_config, resize_numpy_image
+from ldm.util import load_model_from_config, resize_numpy_image, fix_cond_shapes
 
 torch.set_grad_enabled(False)
 
@@ -118,10 +118,10 @@ def parse_args():
         help="unconditional guidance scale: eps = eps(x, empty) + scale * (eps(x, cond) - eps(x, empty))",
     )
     parser.add_argument(
-        '--cond_strength',
+        '--cond_tau',
         type=float,
         default=1.0,
-        help='The proportion of the number of steps using adapter to the total number of steps in the sampling process, similar to tau in prompt-to-prompt. The bigger the better the control'
+        help='timestamp parameter that determines until which step the adapter is applied, similar as Prompt-to-Prompt tau'
     )
     parser.add_argument(
         "--seed",
@@ -172,6 +172,7 @@ def main(opt):
                 uc = model.get_learned_conditioning([opt.neg_prompt])
             else:
                 uc = None
+            c, uc = fix_cond_shapes(model, c, uc)
 
             base_count = len(os.listdir(opt.outdir))
 
@@ -188,7 +189,7 @@ def main(opt):
                                              unconditional_conditioning=uc,
                                              x_T=None,
                                              features_adapter=features_adapter,
-                                             cond_strength=opt.cond_strength
+                                             cond_tau=opt.cond_tau
                                              )
 
             x_samples_ddim = model.decode_first_stage(samples_ddim)

@@ -181,3 +181,19 @@ def resize_numpy_image(image, max_resolution=512*512):
     w = int(np.round(w * k / 64)) * 64
     image = cv2.resize(image, (w, h), interpolation=cv2.INTER_LANCZOS4)
     return image
+
+
+# make uc and prompt shapes match via padding for long prompts
+null_cond = None
+
+def fix_cond_shapes(model, prompt_condition, uc):
+    if uc is None:
+        return prompt_condition, uc
+    global null_cond
+    if null_cond is None:
+        null_cond = model.get_learned_conditioning([""])
+    while prompt_condition.shape[1] > uc.shape[1]:
+        uc = torch.cat((uc, null_cond.repeat((uc.shape[0], 1, 1))), axis=1)
+    while prompt_condition.shape[1] < uc.shape[1]:
+        prompt_condition = torch.cat((prompt_condition, null_cond.repeat((prompt_condition.shape[0], 1, 1))), axis=1)
+    return prompt_condition, uc
