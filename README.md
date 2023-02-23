@@ -6,11 +6,25 @@
 
 ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test) **|** 💥 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
 
+🏰[**Model Zoo**](docs/ModelZoo.md)
 </div>
 
-Official implementation of T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models.
+<div align="center">
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/17445847/220939329-379f88b7-444f-4a3a-9de0-8f90605d1d34.png" height=365>
 
-#### [Paper](https://arxiv.org/abs/2302.08453)
+  *T2I adapters naturally support using multiple adapters together.*<br />
+  The running command is [here](docs/examples.md/#-multi-adapters).<br />
+  [Image source](https://twitter.com/toyxyz3/status/1628375164781211648)
+</p>
+
+</div>
+
+🚩 **New Features/Updates**
+
+- ✅ Feb. 23, 2023. Add the depth adapter [*t2iadapter_depth_sd14v1.pth*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models). See more info in the **[Model Zoo](docs/ModelZoo.md)**.
+
+Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models](https://arxiv.org/abs/2302.08453)**.
 
 <p align="center">
   <img src="assets/overview1.png" height=250>
