@@ -13,7 +13,7 @@ from pytorch_lightning import seed_everything
 from ldm.models.diffusion.plms import PLMSSampler
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.modules.encoders.adapter import Adapter
-from ldm.util import load_model_from_config, resize_numpy_image
+from ldm.util import load_model_from_config, resize_numpy_image, fix_cond_shapes
 from ldm.modules.structure_condition.midas.api import MiDaSInference
 
 torch.set_grad_enabled(False)
@@ -175,6 +175,7 @@ def main(opt):
             model.ema_scope(), \
             autocast('cuda'):
         for v_idx in range(opt.n_samples):
+            # seed_everything(opt.seed+v_idx)
             if opt.type_in == 'depth':
                 # costumer input
                 depth = cv2.imread(opt.path_cond)
@@ -195,6 +196,7 @@ def main(opt):
                 uc = model.get_learned_conditioning([opt.neg_prompt])
             else:
                 uc = None
+            c, uc = fix_cond_shapes(model, c, uc)
 
             base_count = len(os.listdir(opt.outdir)) // 2
 
