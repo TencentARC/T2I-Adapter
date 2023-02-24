@@ -209,7 +209,7 @@ def main(opt):
 
     seed_everything(opt.seed)
 
-    with torch.no_grad(), \
+    with torch.inference_mode(), \
             model.ema_scope():
         for v_idx in range(opt.n_samples):
             if opt.type_in == 'pose':
