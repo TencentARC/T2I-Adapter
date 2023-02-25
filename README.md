@@ -101,6 +101,10 @@ python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely d
   <img src="assets/sketch.PNG">
 </p>
 
+<p align="center">
+  <img src="assets/draw.PNG">
+</p>
+
 #### **Keypose Adapter**
 
 - Keypose to Image Generation
