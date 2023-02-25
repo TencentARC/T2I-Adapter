@@ -76,6 +76,11 @@ pip install -r requirements.txt
 ```bash
 python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely detailed" --path_cond examples/depth/sd.png --ckpt models/v1-5-pruned-emaonly.ckpt --type_in image --sampler ddim --scale 9 --cond_weight 1.5
 ```
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
+<p align="center">
+  <img src="assets/depth.PNG">
+</p>
+
 
 #### **Sketch Adapter**
 
@@ -91,6 +96,10 @@ python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely d
 
 > python test_sketch.py --prompt "1girl, masterpiece, high-quality, high-res" --path_cond examples/anything_sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --ckpt_vae models/anything-v4.0.vae.pt --type_in image
 
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
+<p align="center">
+  <img src="assets/sketch.PNG">
+</p>
 
 #### **Keypose Adapter**
 
@@ -106,14 +115,29 @@ python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely d
 
 > python test_keypose.py --prompt "A beautiful girl" --path_cond examples/sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --ckpt_vae models/anything-v4.0.vae.pt --type_in image
 
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
+<p align="center">
+  <img src="assets/keypose.PNG">
+</p>
+
 
 #### **Segmentation Adapter**
 
 > python test_seg.py --prompt "A black Honda motorcycle parked in front of a garage" --path_cond examples/seg/motor.png
 
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
+<p align="center">
+  <img src="assets/seg.PNG">
+</p>
+
 #### **Combine multiple Adapters**
 
 > python test_composable_adapters.py --prompt "An all white kitchen with an electric stovetop" --seg_cond_path examples/seg_sketch/mask.png --sketch_cond_path examples/seg_sketch/edge.png --sketch_cond_weight 0.5
+
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
+<p align="center">
+  <img src="assets/compose.PNG">
+</p>
 
 #### **Local editing with adapters**
 
@@ -206,6 +230,9 @@ Stable Diffusion results guided with the segmentation and sketch adapters togeth
 <p align="center">
   <img src="assets/multiple_adapters.png">
 </p>
+
+## 🤗 Acknowledgements
+Thank haofanwang for providing a tutorial of [T2I-Adapter diffusers](https://github.com/haofanwang/T2I-Adapter-for-Diffusers). 
 
 
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=TencentARC/T2I-Adapter)
