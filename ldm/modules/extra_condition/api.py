@@ -16,6 +16,7 @@ class ExtraCondition(Enum):
     depth = 3
     canny = 4
     style = 5
+    color = 6
 
 
 def get_cond_model(opt, cond_type: ExtraCondition):
@@ -53,6 +54,8 @@ def get_cond_model(opt, cond_type: ExtraCondition):
         processor = CLIPProcessor.from_pretrained(version)
         clip_vision_model = CLIPVisionModel.from_pretrained(version).to(opt.device)
         return {'processor': processor, 'clip_vision_model': clip_vision_model}
+    elif cond_type == ExtraCondition.color:
+        return None
     else:
         raise NotImplementedError
 
