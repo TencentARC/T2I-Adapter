@@ -192,3 +192,67 @@ class StyleAdapter(nn.Module):
         x = x @ self.proj
 
         return x
+
+
+class ResnetBlock_light(nn.Module):
+    def __init__(self, in_c):
+        super().__init__()
+        self.block1 = nn.Conv2d(in_c, in_c, 3, 1, 1)
+        self.act = nn.ReLU()
+        self.block2 = nn.Conv2d(in_c, in_c, 3, 1, 1)
+
+    def forward(self, x):
+        h = self.block1(x)
+        h = self.act(h)
+        h = self.block2(h)
+
+        return h + x
+
+
+class extractor(nn.Module):
+    def __init__(self, in_c, inter_c, out_c, nums_rb, down=False):
+        super().__init__()
+        self.in_conv = nn.Conv2d(in_c, inter_c, 1, 1, 0)
+        self.body = []
+        for _ in range(nums_rb):
+            self.body.append(ResnetBlock_light(inter_c))
+        self.body = nn.Sequential(*self.body)
+        self.out_conv = nn.Conv2d(inter_c, out_c, 1, 1, 0)
+        self.down = down
+        if self.down == True:
+            self.down_opt = Downsample(in_c, use_conv=False)
+
+    def forward(self, x):
+        if self.down == True:
+            x = self.down_opt(x)
+        x = self.in_conv(x)
+        x = self.body(x)
+        x = self.out_conv(x)
+
+        return x
+
+
+class Adapter_light(nn.Module):
+    def __init__(self, channels=[320, 640, 1280, 1280], nums_rb=3, cin=64):
+        super(Adapter_light, self).__init__()
+        self.unshuffle = nn.PixelUnshuffle(8)
+        self.channels = channels
+        self.nums_rb = nums_rb
+        self.body = []
+        for i in range(len(channels)):
+            if i == 0:
+                self.body.append(extractor(in_c=cin, inter_c=channels[i]//4, out_c=channels[i], nums_rb=nums_rb, down=False))
+            else:
+                self.body.append(extractor(in_c=channels[i-1], inter_c=channels[i]//4, out_c=channels[i], nums_rb=nums_rb, down=True))
+        self.body = nn.ModuleList(self.body)
+
+    def forward(self, x):
+        # unshuffle
+        x = self.unshuffle(x)
+        # extract features
+        features = []
+        for i in range(len(self.channels)):
+            x = self.body[i](x)
+            features.append(x)
+
+        return features
