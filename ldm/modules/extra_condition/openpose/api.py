@@ -1,6 +1,5 @@
-import os
-
 import numpy as np
+import os
 import torch.nn as nn
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
