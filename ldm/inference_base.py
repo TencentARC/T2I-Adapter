@@ -4,7 +4,7 @@ from omegaconf import OmegaConf
 
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.plms import PLMSSampler
-from ldm.modules.encoders.adapter import Adapter, StyleAdapter
+from ldm.modules.encoders.adapter import Adapter, StyleAdapter, Adapter_light
 from ldm.modules.extra_condition.api import ExtraCondition
 from ldm.util import fix_cond_shapes, load_model_from_config, read_state_dict
 
@@ -227,6 +227,11 @@ def get_adapters(opt, cond_type: ExtraCondition):
 
     if cond_type == ExtraCondition.style:
         adapter['model'] = StyleAdapter(width=1024, context_dim=768, num_head=8, n_layes=3, num_token=8).to(opt.device)
+    elif cond_type == ExtraCondition.color:
+        adapter['model'] = Adapter_light(
+            cin=64 * get_cond_ch(cond_type),
+            channels=[320, 640, 1280, 1280],
+            nums_rb=4).to(opt.device)
     else:
         adapter['model'] = Adapter(
             cin=64 * get_cond_ch(cond_type),
