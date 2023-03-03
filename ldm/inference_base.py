@@ -226,7 +226,7 @@ def get_adapters(opt, cond_type: ExtraCondition):
     adapter['cond_weight'] = cond_weight
 
     if cond_type == ExtraCondition.style:
-        adapter['model'] = StyleAdapter(width=1024, context_dim=768, num_head=8, n_layes=3, num_token=4).to(opt.device)
+        adapter['model'] = StyleAdapter(width=1024, context_dim=768, num_head=8, n_layes=3, num_token=8).to(opt.device)
     else:
         adapter['model'] = Adapter(
             cin=64 * get_cond_ch(cond_type),

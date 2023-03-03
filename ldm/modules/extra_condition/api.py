@@ -200,16 +200,23 @@ def get_cond_style(opt, cond_image, cond_inp_type='image', cond_model=None):
 
 
 def get_adapter_feature(inputs, adapters):
-    ret = None
+    ret_feat_map = None
+    ret_feat_seq = None
     if not isinstance(inputs, list):
         inputs = [inputs]
         adapters = [adapters]
 
     for input, adapter in zip(inputs, adapters):
-        cur_feature_list = adapter['model'](input)
-        if ret is None:
-            ret = list(map(lambda x: x * adapter['cond_weight'], cur_feature_list))
+        cur_feature = adapter['model'](input)
+        if isinstance(cur_feature, list):
+            if ret_feat_map is None:
+                ret_feat_map = list(map(lambda x: x * adapter['cond_weight'], cur_feature))
+            else:
+                ret_feat_map = list(map(lambda x, y: x + y * adapter['cond_weight'], ret_feat_map, cur_feature))
         else:
-            ret = list(map(lambda x, y: x + y * adapter['cond_weight'], ret, cur_feature_list))
+            if ret_feat_seq is None:
+                ret_feat_seq = cur_feature
+            else:
+                ret_feat_seq = torch.cat([ret_feat_seq, cur_feature], dim=1)
 
-    return ret
+    return ret_feat_map, ret_feat_seq
