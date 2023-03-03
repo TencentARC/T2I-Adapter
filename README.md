@@ -4,20 +4,20 @@
 
 <div align="center">
 
-⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test) **|** 💥 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
+💥 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter) **|** ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test)
 
-🏰[**Adapter Zoo**](docs/AdapterZoo.md)
+🏰[**Adapter Zoo**](docs/AdapterZoo.md)  **|** 🎨[**Demos**](docs/examples.md)
 </div>
 
 <div align="center">
 <p align="center">
 
   <img src="https://user-images.githubusercontent.com/17445847/222734169-d47789e8-e83c-48c2-80ef-a896c2bafbb0.png" height=365>
+  <img src="https://user-images.githubusercontent.com/17445847/222764508-aa469078-30a9-4271-9f23-57036abe6d48.png" height=365>
   <img src="https://user-images.githubusercontent.com/17445847/222733916-dc26a66e-d786-4407-8889-b81804862b1a.png" height=365>
 
-
-  *You can try those adatpers on [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)*<br />
-
+  *You can try those adatpers on [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)*<br />
+  You can find more examples [here](docs/examples.md)
 
 </p>
 
@@ -25,6 +25,7 @@
 
 🚩 **New Features/Updates**
 
+- ✅ Mar. 3, 2023. Add a [*color adapter (spatial palette)*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models), which has only **17M parameters**.
 - ✅ Mar. 3, 2023. Add four new adapters [*style, color, openpose and canny*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
 - ✅ Feb. 23, 2023. Add the depth adapter [*t2iadapter_depth_sd14v1.pth*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
 - ✅ Feb. 15, 2023. Release T2I-Adapter.
@@ -81,7 +82,7 @@ pip install -r requirements.txt
 ```bash
 python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely detailed" --path_cond examples/depth/sd.png --ckpt models/v1-5-pruned-emaonly.ckpt --type_in image --sampler ddim --scale 9 --cond_weight 1.5
 ```
-[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
   <img src="assets/depth.PNG">
 </p>
@@ -101,7 +102,7 @@ python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely d
 
 > python test_sketch.py --prompt "1girl, masterpiece, high-quality, high-res" --path_cond examples/anything_sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --ckpt_vae models/anything-v4.0.vae.pt --type_in image
 
-[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
   <img src="assets/sketch.PNG">
 </p>
@@ -124,7 +125,7 @@ python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely d
 
 > python test_keypose.py --prompt "A beautiful girl" --path_cond examples/sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --ckpt_vae models/anything-v4.0.vae.pt --type_in image
 
-[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
   <img src="assets/keypose.PNG">
 </p>
@@ -134,7 +135,7 @@ python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely d
 
 > python test_seg.py --prompt "A black Honda motorcycle parked in front of a garage" --path_cond examples/seg/motor.png
 
-[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
   <img src="assets/seg.PNG">
 </p>
@@ -143,7 +144,7 @@ python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely d
 
 > python test_composable_adapters.py --prompt "An all white kitchen with an electric stovetop" --seg_cond_path examples/seg_sketch/mask.png --sketch_cond_path examples/seg_sketch/edge.png --sketch_cond_weight 0.5
 
-[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
   <img src="assets/compose.PNG">
 </p>
