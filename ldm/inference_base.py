@@ -150,6 +150,7 @@ def get_base_argument_parser() -> argparse.ArgumentParser:
         type=int,
         default=42,
     )
+
     parser.add_argument(
         '--n_samples',
         type=int,
@@ -183,7 +184,7 @@ def get_sd_models(opt):
 def get_t2i_adapter_models(opt):
     config = OmegaConf.load(f"{opt.config}")
     model = load_model_from_config(config, opt.sd_ckpt, opt.vae_ckpt)
-    adapter_ckpt_path = getattr(opt, f'{opt.which_cond}_ckpt', None)
+    adapter_ckpt_path = getattr(opt, f'{opt.which_cond}_adapter_ckpt', None)
     if adapter_ckpt_path is None:
         adapter_ckpt_path = getattr(opt, 'adapter_ckpt')
     adapter_ckpt = read_state_dict(adapter_ckpt_path)
@@ -219,7 +220,7 @@ def get_cond_ch(cond_type: ExtraCondition):
 
 def get_adapters(opt, cond_type: ExtraCondition):
     adapter = {}
-    cond_weight = getattr(opt, f'{cond_type.name}_cond_weight', None)
+    cond_weight = getattr(opt, f'{cond_type.name}_weight', None)
     if cond_weight is None:
         cond_weight = getattr(opt, 'cond_weight')
     adapter['cond_weight'] = cond_weight
@@ -234,7 +235,7 @@ def get_adapters(opt, cond_type: ExtraCondition):
             ksize=1,
             sk=True,
             use_conv=False).to(opt.device)
-    ckpt_path = getattr(opt, f'{cond_type.name}_ckpt', None)
+    ckpt_path = getattr(opt, f'{cond_type.name}_adapter_ckpt', None)
     if ckpt_path is None:
         ckpt_path = getattr(opt, 'adapter_ckpt')
     adapter['model'].load_state_dict(torch.load(ckpt_path))

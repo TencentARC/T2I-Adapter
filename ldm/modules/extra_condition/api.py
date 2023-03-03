@@ -111,6 +111,7 @@ def get_cond_keypose(opt, cond_image, cond_inp_type='image', cond_model=None):
         from mmpose.apis import inference_top_down_pose_model, process_mmdet_results
         from ldm.modules.extra_condition.utils import imshow_keypoints
 
+        # mmpose seems not compatible with autocast fp16
         with autocast("cuda", dtype=torch.float32):
             mmdet_results = inference_detector(cond_model['det_model'], pose)
             # keep the person class bounding boxes.
