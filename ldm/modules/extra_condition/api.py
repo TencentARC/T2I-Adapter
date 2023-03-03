@@ -1,11 +1,11 @@
+from enum import Enum, unique
+
 import cv2
 import torch
-from enum import Enum, unique
-from PIL import Image
-from torch import autocast
-
 from basicsr.utils import img2tensor
 from ldm.util import resize_numpy_image
+from PIL import Image
+from torch import autocast
 
 
 @unique
@@ -17,6 +17,7 @@ class ExtraCondition(Enum):
     canny = 4
     style = 5
     color = 6
+    openpose = 7
 
 
 def get_cond_model(opt, cond_type: ExtraCondition):
@@ -56,6 +57,10 @@ def get_cond_model(opt, cond_type: ExtraCondition):
         return {'processor': processor, 'clip_vision_model': clip_vision_model}
     elif cond_type == ExtraCondition.color:
         return None
+    elif cond_type == ExtraCondition.openpose:
+        from ldm.modules.extra_condition.openpose.api import OpenposeInference
+        model = OpenposeInference().to(opt.device)
+        return model
     else:
         raise NotImplementedError
 
@@ -110,9 +115,9 @@ def get_cond_keypose(opt, cond_image, cond_inp_type='image', cond_model=None):
         pose = img2tensor(pose).unsqueeze(0) / 255.
         pose = pose.to(opt.device)
     elif cond_inp_type == 'image':
-        from mmdet.apis import inference_detector
-        from mmpose.apis import inference_top_down_pose_model, process_mmdet_results
         from ldm.modules.extra_condition.utils import imshow_keypoints
+        from mmdet.apis import inference_detector
+        from mmpose.apis import (inference_top_down_pose_model, process_mmdet_results)
 
         with autocast("cuda", dtype=torch.float32):
             mmdet_results = inference_detector(cond_model['det_model'], pose)
@@ -199,6 +204,29 @@ def get_cond_style(opt, cond_image, cond_inp_type='image', cond_model=None):
     style_feat = cond_model['clip_vision_model'](style_for_clip.to(opt.device))['last_hidden_state']
 
     return style_feat
+
+
+def get_cond_openpose(opt, cond_image, cond_inp_type='image', cond_model=None):
+    if isinstance(cond_image, str):
+        openpose_keypose = cv2.imread(cond_image)
+    else:
+        openpose_keypose = cond_image
+    openpose_keypose = resize_numpy_image(
+        openpose_keypose, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
+    opt.H, opt.W = openpose_keypose.shape[:2]
+    if cond_inp_type == 'openpose':
+        openpose_keypose = img2tensor(openpose_keypose).unsqueeze(0) / 255.
+        openpose_keypose = openpose_keypose.to(opt.device)
+    elif cond_inp_type == 'image':
+        with autocast('cuda', dtype=torch.float32):
+            openpose_keypose = cond_model(openpose_keypose)
+        openpose_keypose = img2tensor(openpose_keypose).unsqueeze(0) / 255.
+        openpose_keypose = openpose_keypose.to(opt.device)
+
+    else:
+        raise NotImplementedError
+
+    return openpose_keypose
 
 
 def get_adapter_feature(inputs, adapters):
