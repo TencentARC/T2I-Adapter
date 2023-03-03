@@ -6,6 +6,12 @@
   <img src="https://user-images.githubusercontent.com/17445847/222734169-d47789e8-e83c-48c2-80ef-a896c2bafbb0.png" height=365>
 </p>
 
+## Color Adapter (Spatial Palette)
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/17445847/222764508-aa469078-30a9-4271-9f23-57036abe6d48.png" height=365>
+</p>
+
 ## Openpose Adapter
 <p align="center">
   <img src="https://user-images.githubusercontent.com/17445847/222733916-dc26a66e-d786-4407-8889-b81804862b1a.png" height=365>
