@@ -6,10 +6,10 @@ import torch
 import torch.nn as nn
 from torchvision.transforms import Compose
 
-from ldm.modules.structure_condition.midas.midas.dpt_depth import DPTDepthModel
-from ldm.modules.structure_condition.midas.midas.midas_net import MidasNet
-from ldm.modules.structure_condition.midas.midas.midas_net_custom import MidasNet_small
-from ldm.modules.structure_condition.midas.midas.transforms import Resize, NormalizeImage, PrepareForNet
+from ldm.modules.extra_condition.midas.midas.dpt_depth import DPTDepthModel
+from ldm.modules.extra_condition.midas.midas.midas_net import MidasNet
+from ldm.modules.extra_condition.midas.midas.midas_net_custom import MidasNet_small
+from ldm.modules.extra_condition.midas.midas.transforms import Resize, NormalizeImage, PrepareForNet
 
 
 ISL_PATHS = {

@@ -43,18 +43,12 @@ We can train various adapters according to different conditions, and achieve ric
 
 Put the downloaded models in the `T2I-Adapter/models` folder.
 
-1. The **T2I-Adapters** can be download from <https://huggingface.co/TencentARC/T2I-Adapter>.
+1. The pretrained **T2I-Adapters** can be downloaded from <https://huggingface.co/TencentARC/T2I-Adapter>.
 2. The pretrained **Stable Diffusion v1.4** models can be download from <https://huggingface.co/CompVis/stable-diffusion-v-1-4-original/tree/main>. You need to download the `sd-v1-4.ckpt
 ` file.
-3. [Optional] If you want to use **Anything v4.0** models, you can download the pretrained models from <https://huggingface.co/andite/anything-v4.0/tree/main>. You need to download the `anything-v4.0-pruned.ckpt` file.
-4. The pretrained **clip-vit-large-patch14** folder can be download from <https://huggingface.co/openai/clip-vit-large-patch14/tree/main>. Remember to download the whole folder!
-5. The pretrained keypose detection models include FasterRCNN (human detection) from <https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth> and HRNet (pose detection) from <https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth>.
+3. [Optional] The current adapters are trained based on SD-V1.4, but it also works well on other SD models which are finetuned from SD-V1.4 or SD-V1.5. You can download these models from HuggingFace or civitai, all the following tested models (e.g., Anything anime model) can be found in there.
+4. The pretrained keypose detection models include FasterRCNN (human detection) from <https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth> and HRNet (pose detection) from <https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth>.
 
-After downloading, the folder structure should be like this:
-
-<p align="center">
-  <img src="assets/downloaded_models.png" height=100>
-</p>
 
 ### 🔧 Dependencies and Installation
 
@@ -74,7 +68,10 @@ pip install -r requirements.txt
 
 #### **Depth Adapter**
 ```bash
-python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely detailed" --path_cond examples/depth/sd.png --ckpt models/v1-5-pruned-emaonly.ckpt --type_in image --sampler ddim --scale 9 --cond_weight 1.5
+# when input non-depth image
+python test_adapter.py --which_cond depth --cond_path examples/depth/sd.png --cond_inp_type image --prompt "Stormtrooper's lecture, best quality, extremely detailed" --sd_ckpt models/v1-5-pruned-emaonly.ckpt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_depth_sd14v1.pth
+# when input depth image
+python test_adapter.py --which_cond depth --cond_path examples/depth/desk_depth.png --cond_inp_type depth --prompt "desk, best quality, extremely detailed" --sd_ckpt models/v1-5-pruned-emaonly.ckpt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_depth_sd14v1.pth
 ```
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
 <p align="center">
@@ -83,18 +80,12 @@ python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely d
 
 
 #### **Sketch Adapter**
-
-- Sketch to Image Generation
-
-> python test_sketch.py --prompt "A car with flying wings" --path_cond examples/sketch/car.png --ckpt models/sd-v1-4.ckpt --type_in sketch
-
-- Image to Sketch to Image Generation
-
-> python test_sketch.py --prompt "A beautiful girl" --path_cond examples/sketch/human.png --ckpt models/sd-v1-4.ckpt --type_in image
-
-- The adaptor is training based on stable-diffusion-v1.4 but can be generalized to other models, such as Anything-v4 which is an anime diffusion model
-
-> python test_sketch.py --prompt "1girl, masterpiece, high-quality, high-res" --path_cond examples/anything_sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --ckpt_vae models/anything-v4.0.vae.pt --type_in image
+```bash
+# when input sketch image
+python test_adapter.py --which_cond sketch --cond_path examples/sketch/car.png --cond_inp_type sketch --prompt "A car with flying wings" --sd_ckpt models/sd-v1-4.ckpt --resize_short_edge 512 --cond_tau 0.5 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_sketch_sd14v1.pth
+# when input non-sketch image
+python test_adapter.py --which_cond sketch --cond_path examples/sketch/girl.jpeg --cond_inp_type image --prompt "1girl, masterpiece, high-quality, high-res" --sd_ckpt models/anything-v4.5-pruned-fp16.ckpt --vae_ckpt models/anything-v4.0.vae.pt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_sketch_sd14v1.pth
+```
 
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
 <p align="center">
@@ -106,18 +97,12 @@ python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely d
 </p>
 
 #### **Keypose Adapter**
-
-- Keypose to Image Generation
-
-> python test_keypose.py --prompt "A beautiful girl" --path_cond examples/keypose/iron.png --type_in pose
-
-- Image to Image Generation
-
-> python test_keypose.py --prompt "A beautiful girl" --path_cond examples/sketch/human.png --type_in image
-
-- Generation anime image with Anything-v4 model
-
-> python test_keypose.py --prompt "A beautiful girl" --path_cond examples/sketch/human.png --ckpt models/anything-v4.0-pruned.ckpt --ckpt_vae models/anything-v4.0.vae.pt --type_in image
+```bash
+# when input non-pose image
+python test_adapter.py --which_cond keypose --cond_path examples/sketch/girl.jpeg --cond_inp_type image --prompt "1girl, masterpiece, high-quality, high-res" --sd_ckpt models/anything-v4.5-pruned-fp16.ckpt --vae_ckpt models/anything-v4.0.vae.pt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 1 --adapter_ckpt models/t2iadapter_keypose_sd14v1.pth
+# when input pose image
+python test_adapter.py --which_cond keypose --cond_path examples/keypose/person_keypose.png --cond_inp_type keypose --prompt "astronaut, best quality, extremely detailed" --sd_ckpt models/v1-5-pruned-emaonly.ckpt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_keypose_sd14v1.pth
+```
 
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
 <p align="center">
@@ -126,8 +111,9 @@ python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely d
 
 
 #### **Segmentation Adapter**
-
-> python test_seg.py --prompt "A black Honda motorcycle parked in front of a garage" --path_cond examples/seg/motor.png
+```bash
+python test_adapter.py --which_cond seg --cond_path examples/seg/motor.png --cond_inp_type seg --prompt "A black Honda motorcycle parked in front of a garage, best quality, extremely detailed" --sd_ckpt models/v1-5-pruned-emaonly.ckpt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_seg_sd14v1.pth
+```
 
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
 <p align="center">
@@ -143,9 +129,6 @@ python test_depth.py --prompt "Stormtrooper's lecture, best quality, extremely d
   <img src="assets/compose.PNG">
 </p>
 
-#### **Local editing with adapters**
-
-> python test_sketch_edit.py --prompt "A white cat" --path_cond examples/edit_cat/edge_2.png --path_x0 examples/edit_cat/im.png --path_mask examples/edit_cat/mask.png
 
 ## Stable Diffusion + T2I-Adapters (only ~70M parameters, ~300M storage space)
 

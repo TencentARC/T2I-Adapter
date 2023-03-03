@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from ldm.modules.attention import SpatialTransformer, BasicTransformerBlock
+from collections import OrderedDict
+
 
 def conv_nd(dims, *args, **kwargs):
     """
@@ -15,6 +15,7 @@ def conv_nd(dims, *args, **kwargs):
         return nn.Conv3d(*args, **kwargs)
     raise ValueError(f"unsupported dimensions: {dims}")
 
+
 def avg_pool_nd(dims, *args, **kwargs):
     """
     Create a 1D, 2D, or 3D average pooling module.
@@ -27,6 +28,7 @@ def avg_pool_nd(dims, *args, **kwargs):
         return nn.AvgPool3d(*args, **kwargs)
     raise ValueError(f"unsupported dimensions: {dims}")
 
+
 class Downsample(nn.Module):
     """
     A downsampling layer with an optional convolution.
@@ -36,7 +38,7 @@ class Downsample(nn.Module):
                  downsampling occurs in the inner-two dimensions.
     """
 
-    def __init__(self, channels, use_conv, dims=2, out_channels=None,padding=1):
+    def __init__(self, channels, use_conv, dims=2, out_channels=None, padding=1):
         super().__init__()
         self.channels = channels
         self.out_channels = out_channels or channels
@@ -59,8 +61,8 @@ class Downsample(nn.Module):
 class ResnetBlock(nn.Module):
     def __init__(self, in_c, out_c, down, ksize=3, sk=False, use_conv=True):
         super().__init__()
-        ps = ksize//2
-        if in_c != out_c or sk==False:
+        ps = ksize // 2
+        if in_c != out_c or sk == False:
             self.in_conv = nn.Conv2d(in_c, out_c, ksize, 1, ps)
         else:
             # print('n_in')
@@ -68,7 +70,7 @@ class ResnetBlock(nn.Module):
         self.block1 = nn.Conv2d(out_c, out_c, 3, 1, 1)
         self.act = nn.ReLU()
         self.block2 = nn.Conv2d(out_c, out_c, ksize, 1, ps)
-        if sk==False:
+        if sk == False:
             self.skep = nn.Conv2d(in_c, out_c, ksize, 1, ps)
         else:
             self.skep = None
@@ -80,7 +82,7 @@ class ResnetBlock(nn.Module):
     def forward(self, x):
         if self.down == True:
             x = self.down_opt(x)
-        if self.in_conv is not None: # edit
+        if self.in_conv is not None:  # edit
             x = self.in_conv(x)
 
         h = self.block1(x)
@@ -101,12 +103,14 @@ class Adapter(nn.Module):
         self.body = []
         for i in range(len(channels)):
             for j in range(nums_rb):
-                if (i!=0) and (j==0):
-                    self.body.append(ResnetBlock(channels[i-1], channels[i], down=True, ksize=ksize, sk=sk, use_conv=use_conv))
+                if (i != 0) and (j == 0):
+                    self.body.append(
+                        ResnetBlock(channels[i - 1], channels[i], down=True, ksize=ksize, sk=sk, use_conv=use_conv))
                 else:
-                    self.body.append(ResnetBlock(channels[i], channels[i], down=False, ksize=ksize, sk=sk, use_conv=use_conv))
+                    self.body.append(
+                        ResnetBlock(channels[i], channels[i], down=False, ksize=ksize, sk=sk, use_conv=use_conv))
         self.body = nn.ModuleList(self.body)
-        self.conv_in = nn.Conv2d(cin,channels[0], 3, 1, 1)
+        self.conv_in = nn.Conv2d(cin, channels[0], 3, 1, 1)
 
     def forward(self, x):
         # unshuffle
@@ -116,8 +120,75 @@ class Adapter(nn.Module):
         x = self.conv_in(x)
         for i in range(len(self.channels)):
             for j in range(self.nums_rb):
-                idx = i*self.nums_rb +j
+                idx = i * self.nums_rb + j
                 x = self.body[idx](x)
             features.append(x)
 
         return features
+
+
+class LayerNorm(nn.LayerNorm):
+    """Subclass torch's LayerNorm to handle fp16."""
+
+    def forward(self, x: torch.Tensor):
+        orig_type = x.dtype
+        ret = super().forward(x.type(torch.float32))
+        return ret.type(orig_type)
+
+
+class QuickGELU(nn.Module):
+
+    def forward(self, x: torch.Tensor):
+        return x * torch.sigmoid(1.702 * x)
+
+
+class ResidualAttentionBlock(nn.Module):
+
+    def __init__(self, d_model: int, n_head: int, attn_mask: torch.Tensor = None):
+        super().__init__()
+
+        self.attn = nn.MultiheadAttention(d_model, n_head)
+        self.ln_1 = LayerNorm(d_model)
+        self.mlp = nn.Sequential(
+            OrderedDict([("c_fc", nn.Linear(d_model, d_model * 4)), ("gelu", QuickGELU()),
+                         ("c_proj", nn.Linear(d_model * 4, d_model))]))
+        self.ln_2 = LayerNorm(d_model)
+        self.attn_mask = attn_mask
+
+    def attention(self, x: torch.Tensor):
+        self.attn_mask = self.attn_mask.to(dtype=x.dtype, device=x.device) if self.attn_mask is not None else None
+        return self.attn(x, x, x, need_weights=False, attn_mask=self.attn_mask)[0]
+
+    def forward(self, x: torch.Tensor):
+        x = x + self.attention(self.ln_1(x))
+        x = x + self.mlp(self.ln_2(x))
+        return x
+
+
+class StyleAdapter(nn.Module):
+
+    def __init__(self, width=1024, context_dim=768, num_head=8, n_layes=3, num_token=4):
+        super().__init__()
+
+        scale = width ** -0.5
+        self.transformer_layes = nn.Sequential(*[ResidualAttentionBlock(width, num_head) for _ in range(n_layes)])
+        self.num_token = num_token
+        self.style_embedding = nn.Parameter(torch.randn(1, num_token, width) * scale)
+        self.ln_post = LayerNorm(width)
+        self.ln_pre = LayerNorm(width)
+        self.proj = nn.Parameter(scale * torch.randn(width, context_dim))
+
+    def forward(self, x):
+        # x shape [N, HW+1, C]
+        style_embedding = self.style_embedding + torch.zeros(
+            (x.shape[0], self.num_token, self.style_embedding.shape[-1]), device=x.device)
+        x = torch.cat([x, style_embedding], dim=1)
+        x = self.ln_pre(x)
+        x = x.permute(1, 0, 2)  # NLD -> LND
+        x = self.transformer_layes(x)
+        x = x.permute(1, 0, 2)  # LND -> NLD
+
+        x = self.ln_post(x[:, -self.num_token:, :])
+        x = x @ self.proj
+
+        return x
