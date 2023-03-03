@@ -91,15 +91,15 @@ def get_obj_from_str(string, reload=False):
     return getattr(importlib.import_module(module, package=None), cls)
 
 
-chckpoint_dict_replacements = {
-    'cond_stage_model.transformer.embeddings.': 'cond_stage_model.transformer.text_model.embeddings.',
-    'cond_stage_model.transformer.encoder.': 'cond_stage_model.transformer.text_model.encoder.',
-    'cond_stage_model.transformer.final_layer_norm.': 'cond_stage_model.transformer.text_model.final_layer_norm.',
+checkpoint_dict_replacements = {
+    'cond_stage_model.transformer.text_model.embeddings.': 'cond_stage_model.transformer.embeddings.',
+    'cond_stage_model.transformer.text_model.encoder.': 'cond_stage_model.transformer.encoder.',
+    'cond_stage_model.transformer.text_model.final_layer_norm.': 'cond_stage_model.transformer.final_layer_norm.',
 }
 
 
 def transform_checkpoint_dict_key(k):
-    for text, replacement in chckpoint_dict_replacements.items():
+    for text, replacement in checkpoint_dict_replacements.items():
         if k.startswith(text):
             k = replacement + k[len(text):]
 
@@ -140,11 +140,8 @@ def read_state_dict(checkpoint_file, print_global_state=False):
 def load_model_from_config(config, ckpt, vae_ckpt=None, verbose=False):
     print(f"Loading model from {ckpt}")
     sd = read_state_dict(ckpt)
-    new_sd = dict()
-    for k in sd:
-        new_sd[k.replace('text_model.', '')] = sd[k]
     model = instantiate_from_config(config.model)
-    m, u = model.load_state_dict(new_sd, strict=False)
+    m, u = model.load_state_dict(sd, strict=False)
     if len(m) > 0 and verbose:
         print("missing keys:")
         print(m)
@@ -173,10 +170,14 @@ def load_model_from_config(config, ckpt, vae_ckpt=None, verbose=False):
     model.eval()
     return model
 
-def resize_numpy_image(image, max_resolution=512*512):
+
+def resize_numpy_image(image, max_resolution=512 * 512, resize_short_edge=None):
     h, w = image.shape[:2]
-    k = max_resolution / (h * w)
-    k = k ** 0.5
+    if resize_short_edge is not None:
+        k = resize_short_edge / min(h, w)
+    else:
+        k = max_resolution / (h * w)
+        k = k**0.5
     h = int(np.round(h * k / 64)) * 64
     w = int(np.round(w * k / 64)) * 64
     image = cv2.resize(image, (w, h), interpolation=cv2.INTER_LANCZOS4)

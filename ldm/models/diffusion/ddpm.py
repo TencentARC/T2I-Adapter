@@ -74,6 +74,7 @@ class DDPM(pl.LightningModule):
                  learn_logvar=False,
                  logvar_init=0.,
                  make_it_fit=False,
+                 ucg_training=None,
                  reset_ema=False,
                  reset_num_ema_updates=False,
                  ):
@@ -128,6 +129,9 @@ class DDPM(pl.LightningModule):
         if self.learn_logvar:
             self.logvar = nn.Parameter(self.logvar, requires_grad=True)
 
+        self.ucg_training = ucg_training or dict()
+        if self.ucg_training:
+            self.ucg_prng = np.random.RandomState()
 
     def register_schedule(self, given_betas=None, beta_schedule="linear", timesteps=1000,
                           linear_start=1e-4, linear_end=2e-2, cosine_s=8e-3):
@@ -412,10 +416,10 @@ class DDPM(pl.LightningModule):
 
     def get_input(self, batch, k):
         x = batch[k]
-        if len(x.shape) == 3:
-            x = x[..., None]
-        x = rearrange(x, 'b h w c -> b c h w')
-        x = x.to(memory_format=torch.contiguous_format).float()
+        # if len(x.shape) == 3:
+        #     x = x[..., None]
+        # x = rearrange(x, 'b h w c -> b c h w')
+        # x = x.to(memory_format=torch.contiguous_format).float()
         return x
 
     def shared_step(self, batch):
@@ -568,23 +572,6 @@ class LatentDiffusion(DDPM):
         self.cond_ids = torch.full(size=(self.num_timesteps,), fill_value=self.num_timesteps - 1, dtype=torch.long)
         ids = torch.round(torch.linspace(0, self.num_timesteps - 1, self.num_timesteps_cond)).long()
         self.cond_ids[:self.num_timesteps_cond] = ids
-
-    @rank_zero_only
-    @torch.no_grad()
-    def on_train_batch_start(self, batch, batch_idx, dataloader_idx):
-        # only for very first batch
-        if self.scale_by_std and self.current_epoch == 0 and self.global_step == 0 and batch_idx == 0 and not self.restarted_from_ckpt:
-            assert self.scale_factor == 1., 'rather not use custom rescaling and std-rescaling simultaneously'
-            # set rescale weight to 1./std of encodings
-            print("### USING STD-RESCALING ###")
-            x = super().get_input(batch, self.first_stage_key)
-            x = x.to(self.device)
-            encoder_posterior = self.encode_first_stage(x)
-            z = self.get_first_stage_encoding(encoder_posterior).detach()
-            del self.scale_factor
-            self.register_buffer('scale_factor', 1. / z.flatten().std())
-            print(f"setting self.scale_factor to {self.scale_factor}")
-            print("### USING STD-RESCALING ###")
 
     def register_schedule(self,
                           given_betas=None, beta_schedule="linear", timesteps=1000,
@@ -819,7 +806,10 @@ class LatentDiffusion(DDPM):
         return loss
 
     def forward(self, x, c, *args, **kwargs):
-        t = torch.randint(0, self.num_timesteps, (x.shape[0],), device=self.device).long()
+        if 't' not in kwargs:
+            t = torch.randint(0, self.num_timesteps, (x.shape[0], ), device=self.device).long()
+        else:
+            t = kwargs.pop('t')
 
         return self.p_losses(x, c, t, *args, **kwargs)
 
