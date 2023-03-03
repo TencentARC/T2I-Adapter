@@ -11,18 +11,23 @@
 
 <div align="center">
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/17445847/220939329-379f88b7-444f-4a3a-9de0-8f90605d1d34.png" height=365>
 
-  *T2I adapters naturally support using multiple adapters together.*<br />
-  *The running command is [here](docs/examples.md/#-multi-adapters)*<br />
-  *[Image source](https://twitter.com/toyxyz3/status/1628375164781211648)*
+  <img src="https://user-images.githubusercontent.com/17445847/222734169-d47789e8-e83c-48c2-80ef-a896c2bafbb0.png" height=365>
+  <img src="https://user-images.githubusercontent.com/17445847/222733916-dc26a66e-d786-4407-8889-b81804862b1a.png" height=365>
+
+
+  *You can try those adatpers on [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)*<br />
+
+
 </p>
 
 </div>
 
 🚩 **New Features/Updates**
 
+- ✅ Mar. 3, 2023. Add four new adapters [*style, color, openpose and canny*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
 - ✅ Feb. 23, 2023. Add the depth adapter [*t2iadapter_depth_sd14v1.pth*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
+- ✅ Feb. 15, 2023. Release T2I-Adapter.
 
 Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models](https://arxiv.org/abs/2302.08453)**.
 
@@ -236,7 +241,7 @@ Stable Diffusion results guided with the segmentation and sketch adapters togeth
 </p>
 
 ## 🤗 Acknowledgements
-Thank haofanwang for providing a tutorial of [T2I-Adapter diffusers](https://github.com/haofanwang/T2I-Adapter-for-Diffusers). 
+Thank haofanwang for providing a tutorial of [T2I-Adapter diffusers](https://github.com/haofanwang/T2I-Adapter-for-Diffusers).
 
 
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=TencentARC/T2I-Adapter)
