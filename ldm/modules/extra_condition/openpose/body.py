@@ -210,15 +210,3 @@ class Body(object):
         # subset: n*20 array, 0-17 is the index in candidate, 18 is the total score, 19 is the total parts
         # candidate: x, y, score, id
         return candidate, subset
-
-
-if __name__ == "__main__":
-    body_estimation = Body('../model/body_pose_model.pth')
-
-    test_image = '/group/30042/liangbinxie/Projects/mmpose/test_data/twitter/1.png'
-    oriImg = cv2.imread(test_image)  # B,G,R order
-    candidate, subset = body_estimation(oriImg)
-    print(candidate, subset)
-    canvas = util.draw_bodypose(oriImg, candidate, subset)
-    plt.imshow(canvas[:, :, [2, 1, 0]])
-    plt.show()
