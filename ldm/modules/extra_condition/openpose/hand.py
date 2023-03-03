@@ -1,18 +1,21 @@
-import cv2
 import json
-import numpy as np
 import math
 import time
-from scipy.ndimage.filters import gaussian_filter
-import matplotlib.pyplot as plt
+
+import cv2
 import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
+from scipy.ndimage.filters import gaussian_filter
 from skimage.measure import label
 
-from .model import handpose_model
 from . import util
+from .model import handpose_model
+
 
 class Hand(object):
+
     def __init__(self, model_path):
         self.model = handpose_model()
         if torch.cuda.is_available():
@@ -73,14 +76,3 @@ class Hand(object):
             y, x = util.npmax(map_ori)
             all_peaks.append([x, y])
         return np.array(all_peaks)
-
-if __name__ == "__main__":
-    hand_estimation = Hand('../model/hand_pose_model.pth')
-
-    # test_image = '../images/hand.jpg'
-    test_image = '../images/hand.jpg'
-    oriImg = cv2.imread(test_image)  # B,G,R order
-    peaks = hand_estimation(oriImg)
-    canvas = util.draw_handpose(oriImg, peaks, True)
-    cv2.imshow('', canvas)
-    cv2.waitKey(0)
