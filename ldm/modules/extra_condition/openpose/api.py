@@ -11,7 +11,7 @@ import torch
 from . import util
 from .body import Body
 
-remote_model_path = "body_pose_model.pth"
+remote_model_path = "https://drive.google.com/file/d/1EULkcH_hhSU28qVc1jSJpCh2hGOrzpjK/view?usp=share_link"
 
 
 class OpenposeInference(nn.Module):
