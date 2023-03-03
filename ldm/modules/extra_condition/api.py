@@ -51,7 +51,7 @@ def get_cond_model(opt, cond_type: ExtraCondition):
         return None
     elif cond_type == ExtraCondition.style:
         from transformers import CLIPProcessor, CLIPVisionModel
-        version = '/group/30042/yanzewu/share_bwtween_machines/cache/models--openai--clip-vit-large-patch14/snapshots/8d052a0f05efbaefbc9e8786ba291cfdf93e5bff'
+        version = 'openai/clip-vit-large-patch14'
         processor = CLIPProcessor.from_pretrained(version)
         clip_vision_model = CLIPVisionModel.from_pretrained(version).to(opt.device)
         return {'processor': processor, 'clip_vision_model': clip_vision_model}
