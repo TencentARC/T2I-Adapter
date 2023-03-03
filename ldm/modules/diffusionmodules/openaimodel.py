@@ -1,13 +1,11 @@
 from abc import abstractmethod
-from functools import partial
 import math
-from typing import Iterable
+import torch
 
 import numpy as np
 import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
-from dist_util import init_dist, master_only, get_bare_model, get_dist_info
 
 from ldm.modules.diffusionmodules.util import (
     checkpoint,
@@ -754,7 +752,7 @@ class UNetModel(nn.Module):
         self.middle_block.apply(convert_module_to_f32)
         self.output_blocks.apply(convert_module_to_f32)
 
-    def forward(self, x, timesteps=None, context=None, y=None, features_adapter=None,**kwargs):
+    def forward(self, x, timesteps=None, context=None, y=None, features_adapter=None, append_to_context=None, **kwargs):
         """
         Apply the model to an input batch.
         :param x: an [N x C x ...] Tensor of inputs.
@@ -775,6 +773,9 @@ class UNetModel(nn.Module):
             emb = emb + self.label_emb(y)
 
         h = x.type(self.dtype)
+
+        if append_to_context is not None:
+            context = torch.cat([context, append_to_context], dim=1)
 
         adapter_idx = 0
         for id, module in enumerate(self.input_blocks):

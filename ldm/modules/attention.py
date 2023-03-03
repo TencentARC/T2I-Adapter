@@ -20,6 +20,10 @@ except:
 import os
 _ATTN_PRECISION = os.environ.get("ATTN_PRECISION", "fp32")
 
+if os.environ.get("DISABLE_XFORMERS", "false").lower() == 'true':
+    XFORMERS_IS_AVAILBLE = False
+
+
 def exists(val):
     return val is not None
 

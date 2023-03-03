@@ -4,8 +4,7 @@ invisible_watermark==0.1.5
 basicsr==1.4.2
 einops==0.6.0
 omegaconf==2.3.0
-pytorch_lightning==1.8.6
-clip==0.2.0
+pytorch_lightning==1.5.9
 kornia==0.6.8
 gradio
 opencv-python
@@ -17,3 +16,4 @@ webdataset
 open-clip-torch
 kornia
 safetensors
+timm
