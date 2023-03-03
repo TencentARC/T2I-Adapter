@@ -112,6 +112,7 @@ python test_adapter.py --which_cond keypose --cond_path examples/keypose/person_
 
 #### **Segmentation Adapter**
 ```bash
+# currently, only seg input is supported, if you need image as input, please let us know
 python test_adapter.py --which_cond seg --cond_path examples/seg/motor.png --cond_inp_type seg --prompt "A black Honda motorcycle parked in front of a garage, best quality, extremely detailed" --sd_ckpt models/v1-5-pruned-emaonly.ckpt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_seg_sd14v1.pth
 ```
 
@@ -121,9 +122,10 @@ python test_adapter.py --which_cond seg --cond_path examples/seg/motor.png --con
 </p>
 
 #### **Combine multiple Adapters**
-
-> python test_composable_adapters.py --prompt "An all white kitchen with an electric stovetop" --seg_cond_path examples/seg_sketch/mask.png --sketch_cond_path examples/seg_sketch/edge.png --sketch_cond_weight 0.5
-
+```bash
+# test depth + keypose
+python test_composable_adapters.py --prompt "1girl, computer desk, red chair best quality, extremely detailed" --depth_path examples/depth/desk_depth.png --depth_weight 1.0 --depth_adapter_ckpt experiments/train_depth/models/model_ad_70000.pth --depth_inp_type depth --keypose_path examples/keypose/person_keypose.png --keypose_inp_type keypose --keypose_adapter_ckpt models/t2iadapter_keypose_sd14v1.pth --keypose_weight 1.5 --cond_tau 0.7 --sd_ckpt models/anything-v4.5-pruned-fp16.ckpt --vae_ckpt models/anything-v4.0.vae.pt --n_sample 8 --max_resolution 524288
+```
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
 <p align="center">
   <img src="assets/compose.PNG">
