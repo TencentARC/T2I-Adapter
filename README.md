@@ -71,6 +71,23 @@ pip install -r requirements.txt
 
 [//]: # ()
 [//]: # (> python app.py)
+#### **Color Adapter**
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
+<p align="center">
+  <img src="assets/color.png">
+</p>
+
+#### **Color + Sketch Adapter**
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
+<p align="center">
+  <img src="assets/color_sketch.png">
+</p>
+
+#### **Openpose Adapter**
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
+<p align="center">
+  <img src="assets/openpose.png">
+</p>
 
 #### **Depth Adapter**
 ```bash
