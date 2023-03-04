@@ -208,6 +208,21 @@ def get_cond_style(opt, cond_image, cond_inp_type='image', cond_model=None):
     return style_feat
 
 
+def get_cond_color(opt, cond_image, cond_inp_type='image', cond_model=None):
+    if isinstance(cond_image, str):
+        color = cv2.imread(cond_image)
+    else:
+        color = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
+    color = resize_numpy_image(color, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
+    opt.H, opt.W = color.shape[:2]
+    if cond_inp_type == 'image':
+        color = cv2.resize(color, (opt.W//64, opt.H//64), interpolation=cv2.INTER_CUBIC)
+        color = cv2.resize(color, (opt.W, opt.H), interpolation=cv2.INTER_NEAREST)
+    color = img2tensor(color).unsqueeze(0) / 255.
+    color = color.to(opt.device)
+    return color
+
+
 def get_cond_openpose(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         openpose_keypose = cv2.imread(cond_image)
