@@ -13,8 +13,15 @@
 </p>
 
 ## Openpose Adapter
+
 <p align="center">
   <img src="https://user-images.githubusercontent.com/17445847/222733916-dc26a66e-d786-4407-8889-b81804862b1a.png" height=365>
+</p>
+
+## Canny Adapter (Edge)
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/17445847/222915447-111cd656-9c65-4d29-829a-549b90020c68.png" height=365>
 </p>
 
 ## Multi-adapters
