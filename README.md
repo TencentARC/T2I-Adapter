@@ -92,6 +92,13 @@ python python test_adapter.py --which_cond canny --cond_path examples/canny/cxk_
 TODO
 ```
 
+#### **Spatial Palette (Color) Adapter**
+```bash
+# when input color image
+python test_adapter.py --which_cond color --cond_path examples/color/color_0002.png --cond_inp_type color --prompt "A photo of scenery" --sd_ckpt models/v1-5-pruned-emaonly.ckpt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_color_sd14v1.pth --scale 9
+# when input non-color image, obtain the color image is also straightforward, just bicubic downsample to low res and nearst upsample normal res
+python test_adapter.py --which_cond color --cond_path examples/sketch/scenery.jpg --cond_inp_type image --prompt "A photo of scenery" --sd_ckpt models/v1-5-pruned-emaonly.ckpt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_color_sd14v1.pth --scale 9
+```
 
 #### **Sketch Adapter**
 ```bash
