@@ -83,11 +83,6 @@ pip install -r requirements.txt
   <img src="assets/color_sketch.png">
 </p>
 
-#### **Openpose Adapter**
-[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
-<p align="center">
-  <img src="assets/openpose.png">
-</p>
 
 #### **Depth Adapter**
 ```bash
@@ -134,10 +129,26 @@ python test_adapter.py --which_cond sketch --cond_path examples/sketch/girl.jpeg
   <img src="assets/draw.PNG">
 </p>
 
+
+#### **OpenPose Adapter**
+```bash
+# when input non-pose image
+python test_adapter.py --which_cond openpose --cond_path examples/openpose/iron_man_image.png --cond_inp_type image --prompt "Iron man, high-quality, high-res" --sd_ckpt models/sd-v1-5.ckpt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 1 --adapter_ckpt models/t2iadapter_openpose_sd14v1.pth
+# when input openpose image
+python test_adapter.py --which_cond openpose --cond_path examples/openpose/iron_man_pose.png --cond_inp_type openpose --prompt "Iron man, high-quality, high-res" --sd_ckpt models/anything-v4.5-pruned-fp16.ckpt --vae_ckpt models/anything-v4.0.vae.pt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 1 --adapter_ckpt models/t2iadapter_openpose_sd14v1.pth
+```
+
+[![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
+<p align="center">
+  <img src="assets/openpose.png">
+</p>
+
+
 #### **Keypose Adapter**
 ```bash
 # when input non-pose image
 python test_adapter.py --which_cond keypose --cond_path examples/sketch/girl.jpeg --cond_inp_type image --prompt "1girl, masterpiece, high-quality, high-res" --sd_ckpt models/anything-v4.5-pruned-fp16.ckpt --vae_ckpt models/anything-v4.0.vae.pt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 1 --adapter_ckpt models/t2iadapter_keypose_sd14v1.pth
+
 # when input pose image
 python test_adapter.py --which_cond keypose --cond_path examples/keypose/person_keypose.png --cond_inp_type keypose --prompt "astronaut, best quality, extremely detailed" --sd_ckpt models/v1-5-pruned-emaonly.ckpt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_keypose_sd14v1.pth
 ```
