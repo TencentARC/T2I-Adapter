@@ -69,7 +69,8 @@ def get_cond_sketch(opt, cond_image, cond_inp_type, cond_model=None):
     if isinstance(cond_image, str):
         edge = cv2.imread(cond_image)
     else:
-        edge = cond_image
+        # for gradio input, pay attention, it's rgb numpy
+        edge = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
     edge = resize_numpy_image(edge, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
     opt.H, opt.W = edge.shape[:2]
     if cond_inp_type == 'sketch':
@@ -92,7 +93,7 @@ def get_cond_seg(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         seg = cv2.imread(cond_image)
     else:
-        seg = cond_image
+        seg = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
     seg = resize_numpy_image(seg, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
     opt.H, opt.W = seg.shape[:2]
     if cond_inp_type == 'seg':
@@ -108,7 +109,7 @@ def get_cond_keypose(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         pose = cv2.imread(cond_image)
     else:
-        pose = cond_image
+        pose = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
     pose = resize_numpy_image(pose, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
     opt.H, opt.W = pose.shape[:2]
     if cond_inp_type == 'keypose':
@@ -156,7 +157,7 @@ def get_cond_depth(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         depth = cv2.imread(cond_image)
     else:
-        depth = cond_image
+        depth = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
     depth = resize_numpy_image(depth, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
     opt.H, opt.W = depth.shape[:2]
     if cond_inp_type == 'depth':
@@ -177,7 +178,7 @@ def get_cond_canny(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         canny = cv2.imread(cond_image)
     else:
-        canny = cond_image
+        canny = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
     canny = resize_numpy_image(canny, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
     opt.H, opt.W = canny.shape[:2]
     if cond_inp_type == 'canny':
@@ -198,8 +199,8 @@ def get_cond_style(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         style = Image.open(cond_image)
     else:
-        # cv2 image to PIL image
-        style = Image.fromarray(cv2.cvtColor(cond_image, cv2.COLOR_BGR2RGB))
+        # numpy image to PIL image
+        style = Image.fromarray(cond_image)
 
     style_for_clip = cond_model['processor'](images=style, return_tensors="pt")['pixel_values']
     style_feat = cond_model['clip_vision_model'](style_for_clip.to(opt.device))['last_hidden_state']
@@ -211,7 +212,7 @@ def get_cond_openpose(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         openpose_keypose = cv2.imread(cond_image)
     else:
-        openpose_keypose = cond_image
+        openpose_keypose = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
     openpose_keypose = resize_numpy_image(
         openpose_keypose, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
     opt.H, opt.W = openpose_keypose.shape[:2]
