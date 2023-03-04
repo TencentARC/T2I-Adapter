@@ -7,7 +7,7 @@ All the following adapters are trained with Stable Diffusion (SD) V1.4, and they
 | Adapter Name  | Adapter Description | Demos|Model Parameters|  Model Storage | |
 | --- | --- |--- |--- |--- |---|
 | t2iadapter_color_sd14v1.pth | Spatial color palette → image | [Demos](examples.md#color-adapter-spatial-palette) |18 M | 75 MB | |
-| t2iadapter_style_sd14v1.pth | Image style → image | [Demos](examples.md#style-adapter)||| 154MB |  Preliminary model. Style adapters with finer controls are on the way|
+| t2iadapter_style_sd14v1.pth | Image style → image | [Demos](examples.md#style-adapter)|| 154MB |  Preliminary model. Style adapters with finer controls are on the way|
 | t2iadapter_openpose_sd14v1.pth | Openpose → image| [Demos](examples.md#openpose-adapter) |77 M| 309 MB | |
 | t2iadapter_canny_sd14v1.pth | Canny edges → image | [Demos](examples.md#canny-adapter-edge )|77 M | 309 MB ||
 | t2iadapter_sketch_sd14v1.pth | sketch → image ||77 M| 308 MB | |
