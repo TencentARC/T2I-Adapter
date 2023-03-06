@@ -67,10 +67,15 @@ pip install -r requirements.txt
 
 ### 💻 How to Test
 
-[//]: # (#### **Gradio Application**)
+#### **🔥🔥🔥Gradio Demo**
+The new version of gradio demo supports single adapter test and composable adapters test, please give it a try.
+```bash
+# test for stable diffusion v1.5
+python app.py --sd_ckpt models/v1-5-pruned-emaonly.ckpt
+# test for other stable diffusion model, like Anything 4.5
+python app.py --sd_ckpt models/anything-v4.5-pruned-fp16.ckpt --vae_ckpt models/anything-v4.0.vae.pt
+```
 
-[//]: # ()
-[//]: # (> python app.py)
 #### **Spatial Palette (Color) Adapter**
 ```bash
 # when input color image
