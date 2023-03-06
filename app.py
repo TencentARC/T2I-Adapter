@@ -15,12 +15,9 @@ from huggingface_hub import hf_hub_url
 from pytorch_lightning import seed_everything
 from torch import autocast
 
-from ldm.inference_base import (DEFAULT_NEGATIVE_PROMPT, diffusion_inference,
-                                get_adapters, get_sd_models)
+from ldm.inference_base import (DEFAULT_NEGATIVE_PROMPT, diffusion_inference, get_adapters, get_sd_models)
 from ldm.modules.extra_condition import api
-from ldm.modules.extra_condition.api import (ExtraCondition,
-                                             get_adapter_feature,
-                                             get_cond_model)
+from ldm.modules.extra_condition.api import (ExtraCondition, get_adapter_feature, get_cond_model)
 
 torch.set_grad_enabled(False)
 
@@ -299,4 +296,4 @@ with gr.Blocks(css='style.css') as demo:
 
     inps.extend([prompt, neg_prompt, scale, n_samples, seed, steps, resize_short_edge, cond_tau])
     submit.click(fn=run, inputs=inps, outputs=[output, cond])
-demo.launch(server_name='0.0.0.0', share=False, server_port=47313)
+demo.queue().launch(debug=True, server_name='0.0.0.0')
