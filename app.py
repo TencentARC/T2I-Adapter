@@ -30,7 +30,7 @@ urls = {
         'models/t2iadapter_openpose_sd14v1.pth', 'models/t2iadapter_seg_sd14v1.pth',
         'models/t2iadapter_sketch_sd14v1.pth', 'models/t2iadapter_depth_sd14v1.pth',
         'third-party-models/body_pose_model.pth', "models/t2iadapter_style_sd14v1.pth",
-        "models/t2iadapter_canny_sd14v1.pth"
+        "models/t2iadapter_canny_sd14v1.pth", 'third-party-models/table5_pidinet.pth'
     ],
     'runwayml/stable-diffusion-v1-5': ['v1-5-pruned-emaonly.ckpt'],
     'andite/anything-v4.0': ['anything-v4.0-pruned.ckpt', 'anything-v4.0.vae.pt'],
