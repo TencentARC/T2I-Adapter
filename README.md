@@ -9,8 +9,13 @@
 🏰[**Adapter Zoo**](docs/AdapterZoo.md)  **|** 🎨[**Demos**](docs/examples.md)
 </div>
 
-🔥🔥🔥 Support **cool composable T2I-Adapter with style and color** control. Try the updated Huggingface demo  [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter).
+---
 
+<div align="center">
+
+  🔥🔥🔥 Support **cool composable T2I-Adapter with style and color** control. Try the updated Huggingface demo  [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter).
+  
+</div>
 
 <div align="center">
 <p align="center">
