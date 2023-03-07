@@ -3,6 +3,11 @@ tmp/*
 
 *.DS_Store
 .idea
+.vscode/
+
+# ignore example and results folders
+examples/
+excellent_results/
 
 # ignored files
 version.py
