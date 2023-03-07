@@ -31,6 +31,6 @@
 
 <div align="center">
 
-*T2I adapters naturally support using multiple adapters together.*
+*T2I adapters naturally support using multiple adapters together.* [Image source](https://twitter.com/toyxyz3/status/1628375164781211648)
 
 </div><br />

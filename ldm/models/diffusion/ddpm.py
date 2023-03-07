@@ -805,6 +805,22 @@ class LatentDiffusion(DDPM):
         loss = self(x, c, **kwargs)
         return loss
 
+    def get_time_with_schedule(self, scheduler, bs):
+        if scheduler == 'linear':
+            t = torch.randint(0, self.num_timesteps, (bs,), device=self.device).long()
+        elif scheduler == 'cosine':
+            t = torch.rand((bs, ), device=self.device)
+            t = torch.cos(torch.pi / 2. * t) * self.num_timesteps
+            t = t.long()
+        elif scheduler == 'cubic':
+            t = torch.rand((bs,), device=self.device)
+            t = (1 - t ** 3) * self.num_timesteps
+            t = t.long()
+        else:
+            raise NotImplementedError
+        t = torch.clamp(t, min=0, max=self.num_timesteps-1)
+        return t
+
     def forward(self, x, c, *args, **kwargs):
         if 't' not in kwargs:
             t = torch.randint(0, self.num_timesteps, (x.shape[0], ), device=self.device).long()
