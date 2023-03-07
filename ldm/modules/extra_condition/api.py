@@ -262,8 +262,8 @@ def get_adapter_feature(inputs, adapters):
                 ret_feat_map = list(map(lambda x, y: x + y * adapter['cond_weight'], ret_feat_map, cur_feature))
         else:
             if ret_feat_seq is None:
-                ret_feat_seq = cur_feature
+                ret_feat_seq = cur_feature * adapter['cond_weight']
             else:
-                ret_feat_seq = torch.cat([ret_feat_seq, cur_feature], dim=1)
+                ret_feat_seq = torch.cat([ret_feat_seq, cur_feature * adapter['cond_weight']], dim=1)
 
     return ret_feat_map, ret_feat_seq
