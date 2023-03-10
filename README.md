@@ -113,9 +113,9 @@ python test_adapter.py --which_cond depth --cond_path examples/depth/desk_depth.
 #### **Canny Adapter**
 ```bash
 # when input canny image
-python python test_adapter.py --which_cond canny --cond_path examples/canny/rabbit.png --cond_inp_type canny --prompt "A rabbit, best quality, extremely detailed" --sd_ckpt models/sd-v1-4.ckpt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_canny_sd14v1.pth
-# when input non-canny image
 python python test_adapter.py --which_cond canny --cond_path examples/canny/toy_canny.png --cond_inp_type canny --prompt "Cute toy, best quality, extremely detailed" --sd_ckpt models/anything-v4.5-pruned-fp16.ckpt --vae_ckpt models/anything-v4.0.vae.pt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_canny_sd14v1.pth
+# when input non-canny image
+python python test_adapter.py --which_cond canny --cond_path examples/canny/rabbit.png --cond_inp_type image --prompt "A rabbit, best quality, extremely detailed" --sd_ckpt models/sd-v1-4.ckpt --resize_short_edge 512 --cond_tau 1.0 --cond_weight 1.0 --n_samples 2 --adapter_ckpt models/t2iadapter_canny_sd14v1.pth
 ```
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 
