@@ -6,7 +6,7 @@
 
 💥 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter) **|** ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test)
 
-🏰[**Adapter Zoo**](docs/AdapterZoo.md)  **|** 🎨[**Demos**](docs/examples.md)
+🏰[**Adapter Zoo**](docs/AdapterZoo.md)  **|** 🎨[**Demos**](docs/examples.md) | 🎥[**How to use On Automatic1111 Web UI Tutorial**](https://youtu.be/tXaQAkOgezQ)
 </div>
 
 ---
