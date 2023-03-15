@@ -14,7 +14,7 @@
 <div align="center">
 
   🔥🔥🔥 Support **cool composable T2I-Adapter with style and color** control. Try the updated Huggingface demo  [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter).
-  
+
 </div>
 
 <div align="center">
@@ -50,7 +50,7 @@ T2I-Adapter aligns internal knowledge in T2I models with external control signal
 We can train various adapters according to different conditions, and achieve rich control and editing effects.
 
 <p align="center">
-  <img src="assets/teaser.png" height=500>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/teaser.png" height=500>
 </p>
 
 ### ⏬ Download Models
@@ -93,7 +93,7 @@ python test_adapter.py --which_cond color --cond_path examples/sketch/scenery.jp
 ```
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
-  <img src="assets/color.png">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/color.png">
 </p>
 
 
@@ -107,7 +107,7 @@ python test_adapter.py --which_cond depth --cond_path examples/depth/desk_depth.
 ```
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
-  <img src="assets/depth.PNG">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/depth.PNG">
 </p>
 
 #### **Canny Adapter**
@@ -120,7 +120,7 @@ python python test_adapter.py --which_cond canny --cond_path examples/canny/rabb
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 
 <p align="center">
-  <img src="assets/canny.png">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/canny.png">
 </p>
 
 #### **Sketch Adapter**
@@ -133,11 +133,11 @@ python test_adapter.py --which_cond sketch --cond_path examples/sketch/girl.jpeg
 
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
-  <img src="assets/sketch.PNG">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/sketch.PNG">
 </p>
 
 <p align="center">
-  <img src="assets/draw.PNG">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/draw.PNG">
 </p>
 
 
@@ -151,7 +151,7 @@ python test_adapter.py --which_cond openpose --cond_path examples/openpose/iron_
 
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
-  <img src="assets/openpose.png">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/openpose.png">
 </p>
 
 
@@ -166,7 +166,7 @@ python test_adapter.py --which_cond keypose --cond_path examples/keypose/person_
 
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
-  <img src="assets/keypose.PNG">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/keypose.PNG">
 </p>
 
 
@@ -178,7 +178,7 @@ python test_adapter.py --which_cond seg --cond_path examples/seg/motor.png --con
 
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
-  <img src="assets/seg.PNG">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/seg.PNG">
 </p>
 
 #### **Combine multiple Adapters**
@@ -192,17 +192,17 @@ python test_composable_adapters.py --prompt "car" --sketch_path examples/sketch/
 ```
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/ChongMou/T2I-Adapter)
 <p align="center">
-  <img src="assets/compose.PNG">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/compose.PNG">
 </p>
 
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
-  <img src="assets/color_sketch.png">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/color_sketch.png">
 </p>
 
 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 <p align="center">
-  <img src="assets/style_sketch.png">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/style_sketch.png">
 </p>
 
 
@@ -224,7 +224,7 @@ The following is the detailed structure of a **Stable Diffusion** model with the
 The corresponding edge maps are predicted by PiDiNet. The sketch T2I-Adapter can well generalize to other similar sketch types, for example, sketches from the Internet and user scribbles.
 
 <p align="center">
-  <img src="assets/sketch_base.png" height=800>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/sketch_base.png" height=800>
 </p>
 
 ### Stable Diffusion results guided with the keypose T2I-Adapter
@@ -233,7 +233,7 @@ The keypose results predicted by the [MMPose](https://github.com/open-mmlab/mmpo
 With the keypose guidance, the keypose T2I-Adapter can also help to generate animals with the same keypose, for example, pandas and tigers.
 
 <p align="center">
-  <img src="assets/keypose_base.png" height=600>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/keypose_base.png" height=600>
 </p>
 
 ### T2I-Adapter with Anything-v4.0
@@ -243,13 +243,13 @@ Once the T2I-Adapter is trained, it can act as a **plug-and-play module** and ca
 #### ✨ Anything results with the plug-and-play sketch T2I-Adapter (no extra training)
 
 <p align="center">
-  <img src="assets/sketch_anything.png" height=600>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/sketch_anything.png" height=600>
 </p>
 
 #### Anything results with the plug-and-play keypose T2I-Adapter (no extra training)
 
 <p align="center">
-  <img src="assets/keypose_anything.png" height=600>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/keypose_anything.png" height=600>
 </p>
 
 ### Local editing with the sketch adapter
@@ -259,13 +259,13 @@ When combined with the inpaiting mode of Stable Diffusion, we can realize local 
 #### ✨ Change the head direction of the cat
 
 <p align="center">
-  <img src="assets/local_editing_cat.png" height=300>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/local_editing_cat.png" height=300>
 </p>
 
 #### ✨ Add rabbit ears on the head of the Iron Man.
 
 <p align="center">
-  <img src="assets/local_editing_ironman.png" height=400>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/local_editing_ironman.png" height=400>
 </p>
 
 ### Combine different concepts with adapter
@@ -275,7 +275,7 @@ Adapter can be used to enhance the SD ability to combine different concepts.
 ####  ✨ A car with flying wings. / A doll in the shape of letter ‘A’.
 
 <p align="center">
-  <img src="assets/enhance_SD2.png" height=600>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/enhance_SD2.png" height=600>
 </p>
 
 ### Sequential editing with the sketch adapter
@@ -283,7 +283,7 @@ Adapter can be used to enhance the SD ability to combine different concepts.
 We can realize the sequential editing with the adapter guidance.
 
 <p align="center">
-  <img src="assets/sequential_edit.png">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/sequential_edit.png">
 </p>
 
 ### Composable Guidance with multiple adapters
@@ -291,7 +291,7 @@ We can realize the sequential editing with the adapter guidance.
 Stable Diffusion results guided with the segmentation and sketch adapters together.
 
 <p align="center">
-  <img src="assets/multiple_adapters.png">
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/multiple_adapters.png">
 </p>
 
 ## 🤗 Acknowledgements
