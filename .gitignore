@@ -1,6 +1,9 @@
 # ignored folders
 tmp/*
 
+# ignore images in examples folder
+examples/*/*
+
 *.DS_Store
 .idea
 
