@@ -135,7 +135,16 @@ def get_base_argument_parser() -> argparse.ArgumentParser:
         type=float,
         default=1.0,
         help='timestamp parameter that determines until which step the adapter is applied, '
-        'similar as Prompt-to-Prompt tau')
+        'similar as Prompt-to-Prompt tau',
+    )
+
+    parser.add_argument(
+        '--style_cond_tau',
+        type=float,
+        default=1.0,
+        help='timestamp parameter that determines until which step the adapter is applied, '
+             'similar as Prompt-to-Prompt tau',
+    )
 
     parser.add_argument(
         '--cond_weight',
@@ -274,6 +283,7 @@ def diffusion_inference(opt, model, sampler, adapter_features, append_to_context
         features_adapter=adapter_features,
         append_to_context=append_to_context,
         cond_tau=opt.cond_tau,
+        style_cond_tau=opt.style_cond_tau,
     )
 
     x_samples = model.decode_first_stage(samples_latents)
