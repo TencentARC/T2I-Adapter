@@ -15,7 +15,9 @@
 
   <!-- 🔥🔥🔥 Support **cool composable T2I-Adapter with style and color** control. Try the updated Huggingface demo  [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter). -->
 
-  Release **CoAdapter** (**Co**mposable **Adapter**). We will update the Huggingface Gadio later.
+  Add **CoAdapter** (**Co**mposable **Adapter**). We will update the Huggingface Gadio later.
+
+  Note that the current Huggingface Gradio demo **does not** support CoAdapter.
 
 </div>
 
@@ -23,10 +25,10 @@
 <p align="center">
   <img src="https://user-images.githubusercontent.com/17445847/225639246-26ee67a9-a9d9-47e4-b3bf-813d570e3d96.png" height=320>
 
-  You can find the details and demos about CoAdapter from [coadapter.md](docs/coadapter.md)
-
-
-  You can find more examples [here](docs/examples.md)
+   You can find the details and demos about CoAdapter from [coadapter.md](docs/coadapter.md)
+  <img src="https://user-images.githubusercontent.com/17445847/225656254-f0aff320-42fc-49bf-b8ff-9a779ad68db1.png" height=450>
+  <img src="https://user-images.githubusercontent.com/17445847/225658981-51d775cd-c635-457f-8e60-24848369ff51.png" height=450>
+  <!-- You can find more examples [here](docs/examples.md) -->
 
 </p>
 
