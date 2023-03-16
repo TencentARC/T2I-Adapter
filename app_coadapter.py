@@ -11,18 +11,19 @@ from pytorch_lightning import seed_everything
 from basicsr.utils import tensor2img
 from ldm.inference_base import DEFAULT_NEGATIVE_PROMPT, diffusion_inference, get_adapters, get_sd_models
 from ldm.modules.extra_condition import api
-from ldm.modules.extra_condition.api import ExtraCondition, get_adapter_feature, get_cond_model
+from ldm.modules.extra_condition.api import ExtraCondition, get_cond_model
+from ldm.modules.encoders.adapter import CoAdapterFuser
 
 torch.set_grad_enabled(False)
 
-supported_cond = [e.name for e in ExtraCondition]
+supported_cond = ['style', 'color', 'sketch', 'depth', 'canny']
 
 # config
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '--sd_ckpt',
     type=str,
-    default='models/sd-v1-4.ckpt',
+    default='models/v1-5-pruned-emaonly.ckpt',
     help='path to checkpoint of stable diffusion model, both .ckpt and .safetensor are supported',
 )
 parser.add_argument(
@@ -34,14 +35,15 @@ parser.add_argument(
 global_opt = parser.parse_args()
 global_opt.config = 'configs/stable-diffusion/sd-v1-inference.yaml'
 for cond_name in supported_cond:
-    setattr(global_opt, f'{cond_name}_adapter_ckpt', f'models/t2iadapter_{cond_name}_sd14v1.pth')
+    setattr(global_opt, f'{cond_name}_adapter_ckpt', f'models/coadapter-{cond_name}-sd15v1.pth')
 global_opt.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 global_opt.max_resolution = 512 * 512
 global_opt.sampler = 'ddim'
 global_opt.cond_weight = 1.0
 global_opt.C = 4
 global_opt.f = 8
-global_opt.style_cond_tau = 0.5
+#TODO: expose style_cond_tau to users
+global_opt.style_cond_tau = 1.0
 
 # stable-diffusion model
 sd_model, sampler = get_sd_models(global_opt)
@@ -50,6 +52,11 @@ adapters = {}
 cond_models = {}
 
 torch.cuda.empty_cache()
+
+# fuser is indispensable
+coadapter_fuser = CoAdapterFuser(unet_channels=[320, 640, 1280, 1280], width=768, num_head=8, n_layes=3)
+coadapter_fuser.load_state_dict(torch.load(f'models/coadapter-fuser-sd15v1.pth'))
+coadapter_fuser = coadapter_fuser.to(global_opt.device)
 
 
 def run(*args):
@@ -89,8 +96,21 @@ def run(*args):
                 else:
                     conds.append(process_cond_module(opt, im2, cond_name, None))
 
-        adapter_features, append_to_context = get_adapter_feature(
-            conds, [adapters[cond_name] for cond_name in activated_conds])
+        features = dict()
+        for idx, cond_name in enumerate(activated_conds):
+            cur_feats = adapters[cond_name]['model'](conds[idx])
+            if isinstance(cur_feats, list):
+                for i in range(len(cur_feats)):
+                    cur_feats[i] *= adapters[cond_name]['cond_weight']
+            else:
+                cur_feats *= adapters[cond_name]['cond_weight']
+            features[cond_name] = cur_feats
+
+        adapter_features, append_to_context = coadapter_fuser(features)
+
+        output_conds = []
+        for cond in conds:
+            output_conds.append(tensor2img(cond, rgb2bgr=False))
 
         ims = []
         seed_everything(opt.seed)
@@ -100,7 +120,7 @@ def run(*args):
 
         # Clear GPU memory cache so less likely to OOM
         torch.cuda.empty_cache()
-        return ims
+        return ims, output_conds
 
 
 def change_visible(im1, im2, val):
@@ -117,12 +137,12 @@ def change_visible(im1, im2, val):
     return outputs
 
 
-DESCRIPTION = '''# Composable T2I-Adapter
+DESCRIPTION = '''# CoAdapter
 [Paper](https://arxiv.org/abs/2302.08453)               [GitHub](https://github.com/TencentARC/T2I-Adapter) 
 
-This gradio demo is for a simple experience of composable T2I-Adapter:
+This gradio demo is for a simple experience of CoAdapter:
 '''
-with gr.Blocks(title="T2I-Adapter", css=".gr-box {border-color: #8136e2}") as demo:
+with gr.Blocks(title="CoAdapter", css=".gr-box {border-color: #8136e2}") as demo:
     gr.Markdown(DESCRIPTION)
 
     btns = []
@@ -171,8 +191,9 @@ with gr.Blocks(title="T2I-Adapter", css=".gr-box {border-color: #8136e2}") as de
     with gr.Row():
         submit = gr.Button("Generate")
     output = gr.Gallery().style(grid=2, height='auto')
+    cond = gr.Gallery().style(grid=2, height='auto')
 
     inps = list(chain(btns, ims1, ims2, cond_weights))
     inps.extend([prompt, neg_prompt, scale, n_samples, seed, steps, resize_short_edge, cond_tau])
-    submit.click(fn=run, inputs=inps, outputs=[output])
+    submit.click(fn=run, inputs=inps, outputs=[output, cond])
 demo.launch()

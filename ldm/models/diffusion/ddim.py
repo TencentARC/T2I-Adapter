@@ -77,6 +77,7 @@ class DDIMSampler(object):
                features_adapter=None,
                append_to_context=None,
                cond_tau=0.4,
+               style_cond_tau=1.0,
                # this has to come in the same format as the conditioning, # e.g. as encoded tokens, ...
                **kwargs
                ):
@@ -112,6 +113,7 @@ class DDIMSampler(object):
                                                     features_adapter=features_adapter,
                                                     append_to_context=append_to_context,
                                                     cond_tau=cond_tau,
+                                                    style_cond_tau=style_cond_tau,
                                                     )
         return samples, intermediates
 
@@ -122,7 +124,7 @@ class DDIMSampler(object):
                       mask=None, x0=None, img_callback=None, log_every_t=100,
                       temperature=1., noise_dropout=0., score_corrector=None, corrector_kwargs=None,
                       unconditional_guidance_scale=1., unconditional_conditioning=None, features_adapter=None,
-                      append_to_context=None, cond_tau=0.4):
+                      append_to_context=None, cond_tau=0.4, style_cond_tau=1.0):
         device = self.model.betas.device
         b = shape[0]
         if x_T is None:
@@ -160,9 +162,8 @@ class DDIMSampler(object):
                                       unconditional_conditioning=unconditional_conditioning,
                                       features_adapter=None if index < int(
                                           (1 - cond_tau) * total_steps) else features_adapter,
-                                      # TODO support style_cond_tau
                                       append_to_context=None if index < int(
-                                          0.5 * total_steps) else append_to_context,
+                                          (1 - style_cond_tau) * total_steps) else append_to_context,
                                       )
             img, pred_x0 = outs
             if callback: callback(i)

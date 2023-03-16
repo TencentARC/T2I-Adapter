@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 from collections import OrderedDict
+from ldm.modules.extra_condition.api import ExtraCondition
+from ldm.modules.diffusionmodules.util import zero_module
 
 
 def conv_nd(dims, *args, **kwargs):
@@ -256,3 +258,82 @@ class Adapter_light(nn.Module):
             features.append(x)
 
         return features
+
+
+class CoAdapterFuser(nn.Module):
+    def __init__(self, unet_channels=[320, 640, 1280, 1280], width=768, num_head=8, n_layes=3):
+        super(CoAdapterFuser, self).__init__()
+        scale = width ** 0.5
+        # 16, maybe large enough for the number of adapters?
+        self.task_embedding = nn.Parameter(scale * torch.randn(16, width))
+        self.positional_embedding = nn.Parameter(scale * torch.randn(len(unet_channels), width))
+        self.spatial_feat_mapping = nn.ModuleList()
+        for ch in unet_channels:
+            self.spatial_feat_mapping.append(nn.Sequential(
+                nn.SiLU(),
+                nn.Linear(ch, width),
+            ))
+        self.transformer_layes = nn.Sequential(*[ResidualAttentionBlock(width, num_head) for _ in range(n_layes)])
+        self.ln_post = LayerNorm(width)
+        self.ln_pre = LayerNorm(width)
+        self.spatial_ch_projs = nn.ModuleList()
+        for ch in unet_channels:
+            self.spatial_ch_projs.append(zero_module(nn.Linear(width, ch)))
+        self.seq_proj = nn.Parameter(torch.zeros(width, width))
+
+    def forward(self, features):
+        if len(features) == 0:
+            return None, None
+        inputs = []
+        for cond_name in features.keys():
+            task_idx = getattr(ExtraCondition, cond_name).value
+            if not isinstance(features[cond_name], list):
+                inputs.append(features[cond_name] + self.task_embedding[task_idx])
+                continue
+
+            feat_seq = []
+            for idx, feature_map in enumerate(features[cond_name]):
+                feature_vec = torch.mean(feature_map, dim=(2, 3))
+                feature_vec = self.spatial_feat_mapping[idx](feature_vec)
+                feat_seq.append(feature_vec)
+            feat_seq = torch.stack(feat_seq, dim=1)  # Nx4xC
+            feat_seq = feat_seq + self.task_embedding[task_idx]
+            feat_seq = feat_seq + self.positional_embedding
+            inputs.append(feat_seq)
+
+        x = torch.cat(inputs, dim=1)  # NxLxC
+        x = self.ln_pre(x)
+        x = x.permute(1, 0, 2)  # NLD -> LND
+        x = self.transformer_layes(x)
+        x = x.permute(1, 0, 2)  # LND -> NLD
+        x = self.ln_post(x)
+
+        ret_feat_map = None
+        ret_feat_seq = None
+        cur_seq_idx = 0
+        for cond_name in features.keys():
+            if not isinstance(features[cond_name], list):
+                length = features[cond_name].size(1)
+                transformed_feature = features[cond_name] * ((x[:, cur_seq_idx:cur_seq_idx+length] @ self.seq_proj) + 1)
+                if ret_feat_seq is None:
+                    ret_feat_seq = transformed_feature
+                else:
+                    ret_feat_seq = torch.cat([ret_feat_seq, transformed_feature], dim=1)
+                cur_seq_idx += length
+                continue
+
+            length = len(features[cond_name])
+            transformed_feature_list = []
+            for idx in range(length):
+                alpha = self.spatial_ch_projs[idx](x[:, cur_seq_idx+idx])
+                alpha = alpha.unsqueeze(-1).unsqueeze(-1) + 1
+                transformed_feature_list.append(features[cond_name][idx] * alpha)
+            if ret_feat_map is None:
+                ret_feat_map = transformed_feature_list
+            else:
+                ret_feat_map = list(map(lambda x, y: x + y, ret_feat_map, transformed_feature_list))
+            cur_seq_idx += length
+
+        assert cur_seq_idx == x.size(1)
+
+        return ret_feat_map, ret_feat_seq
