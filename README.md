@@ -75,6 +75,12 @@ pip install -r requirements.txt
 
 ### 💻 How to Test
 
+#### Download Examples (optional)
+We provide some [example](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/examples) inputs in huggingface, you can download these examples by:
+```bash
+python examples/download_examples.py
+```
+
 #### **🔥🔥🔥Gradio Demo**
 The new version of gradio demo supports single adapter test and composable adapters test, please give it a try.
 ```bash
