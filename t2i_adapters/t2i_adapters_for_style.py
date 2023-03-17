@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from transformers import CLIPVisionModel
 
-from ldm.models.diffusion.ddpm import LatentDiffusion
+from ldm.models.diffusion.ddpm import LatentDiffusion, disabled_train
 from ldm.util import instantiate_from_config
 
 
@@ -16,9 +16,11 @@ class T2IAdapterStyleV3(LatentDiffusion):
         self.clip_vision_model = CLIPVisionModel.from_pretrained(
             'openai/clip-vit-large-patch14'
         )
+
         self.clip_vision_model = self.clip_vision_model.eval()
+        self.clip_vision_model.train = disabled_train
         for param in self.clip_vision_model.parameters():
-            param.required_grad = False
+            param.requires_grad = False
 
 
     def shared_step(self, batch, **kwargs):
