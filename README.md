@@ -61,11 +61,9 @@ We can train various adapters according to different conditions, and achieve ric
 
 Put the downloaded models in the `T2I-Adapter/models` folder.
 
-1. The pretrained **T2I-Adapters** can be downloaded from <https://huggingface.co/TencentARC/T2I-Adapter>.
-2. The pretrained **Stable Diffusion v1.4** models can be download from <https://huggingface.co/CompVis/stable-diffusion-v-1-4-original/tree/main>. You need to download the `sd-v1-4.ckpt
-` file.
-3. [Optional] The current adapters are trained based on SD-V1.4, but it also works well on other SD models which are finetuned from SD-V1.4 or SD-V1.5. You can download these models from HuggingFace or civitai, all the following tested models (e.g., Anything anime model) can be found in there.
-4. The pretrained keypose detection models include FasterRCNN (human detection) from <https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth> and HRNet (pose detection) from <https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth>.
+1. You can find the pretrained **T2I-Adapters**, **CoAdapters**, and third party models from <https://huggingface.co/TencentARC/T2I-Adapter>.
+2. A base SD model is still needed to inference. We recommend to use **Stable Diffusion v1.5**. But please note that the adapters should work well on other SD models which are finetuned from SD-V1.4 or SD-V1.5. You can download these models from HuggingFace or civitai, all the following tested models (e.g., Anything anime model) can be found in there.
+3. [Optional] If you want to use mmpose adapter, you need to download the pretrained keypose detection models include [FasterRCNN (human detection)](https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth) and [HRNet (pose detection)](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth).
 
 
 ### 🔧 Dependencies and Installation
@@ -85,8 +83,14 @@ We provide some [example](https://huggingface.co/TencentARC/T2I-Adapter/tree/mai
 python examples/download_examples.py
 ```
 
-#### **🔥🔥🔥Gradio Demo**
-The new version of gradio demo supports single adapter test and composable adapters test, please give it a try.
+#### **🔥🔥🔥Gradio Demo for CoAdapter**
+You need to download the pretrained CoAdapters from [huggingface](https://huggingface.co/TencentARC/T2I-Adapter) first, and put them in the `models` folder
+```bash
+# test for stable diffusion v1.5
+python app_coadapter.py --sd_ckpt models/v1-5-pruned-emaonly.ckpt
+```
+
+#### **Gradio Demo for T2I-Adapters**
 ```bash
 # test for stable diffusion v1.5
 python app.py --sd_ckpt models/v1-5-pruned-emaonly.ckpt
