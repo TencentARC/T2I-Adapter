@@ -4,7 +4,7 @@
 
 <div align="center">
 
-💥 [![Huggingface T2I-Adapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter), [![Huggingface CoAdapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter) **|** ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test)
+💥 [![Huggingface T2I-Adapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter) **(T2I-Adapter)**, [![Huggingface CoAdapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter) **(CoAdapter)** **|** ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test)
 
 🏰[**Adapter Zoo**](docs/AdapterZoo.md)  **|** 🎨[**Demos**](docs/examples.md)
 </div>
