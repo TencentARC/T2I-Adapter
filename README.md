@@ -4,7 +4,7 @@
 
 <div align="center">
 
-💥 [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter) **|** ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test)
+💥 [![Huggingface Gradio (T2I-Adapter)](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter), [![Huggingface Gradio (CoAdapter)](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter) **|** ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test)
 
 🏰[**Adapter Zoo**](docs/AdapterZoo.md)  **|** 🎨[**Demos**](docs/examples.md)
 </div>
@@ -15,9 +15,7 @@
 
   <!-- 🔥🔥🔥 Support **cool composable T2I-Adapter with style and color** control. Try the updated Huggingface demo  [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter). -->
 
-  Add **CoAdapter** (**Co**mposable **Adapter**). We will update the Huggingface Gadio later. Currently, you can try the [local gradio demo](app_coadapter.py).
-
-  Note that the current Huggingface Gradio demo **does not** support CoAdapter.
+  Add **CoAdapter** (**Co**mposable **Adapter**). The online Huggingface Gadio has been updated [![Huggingface Gradio (CoAdapter)](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter). You can also try the [local gradio demo](app_coadapter.py).
 
 </div>
 
