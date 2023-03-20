@@ -1,6 +1,7 @@
 # demo inspired by https://huggingface.co/spaces/lambdalabs/image-mixer-demo
 import argparse
 import copy
+import cv2
 import gradio as gr
 import torch
 from functools import partial
@@ -16,7 +17,7 @@ from ldm.modules.encoders.adapter import CoAdapterFuser
 
 torch.set_grad_enabled(False)
 
-supported_cond = ['style', 'color', 'sketch', 'depth', 'canny']
+supported_cond = ['style', 'sketch', 'color', 'depth', 'canny']
 
 # config
 parser = argparse.ArgumentParser()
@@ -74,6 +75,7 @@ def run(*args):
 
         conds = []
         activated_conds = []
+        prev_size = None
         for idx, (b, im1, im2, cond_weight) in enumerate(zip(*inps)):
             cond_name = supported_cond[idx]
             if b == 'Nothing':
@@ -92,9 +94,25 @@ def run(*args):
                 if b == 'Image':
                     if cond_name not in cond_models:
                         cond_models[cond_name] = get_cond_model(opt, getattr(ExtraCondition, cond_name))
-                    conds.append(process_cond_module(opt, im1, 'image', cond_models[cond_name]))
+                    if prev_size is not None:
+                        image = cv2.resize(im1, prev_size, interpolation=cv2.INTER_LANCZOS4)
+                    else:
+                        image = im1
+                    conds.append(process_cond_module(opt, image, 'image', cond_models[cond_name]))
+                    if idx != 0 and prev_size is None:  # skip style since we only care spatial cond size
+                        h, w = image.shape[:2]
+                        prev_size = (w, h)
                 else:
-                    conds.append(process_cond_module(opt, im2, cond_name, None))
+                    if prev_size is not None:
+                        image = cv2.resize(im2, prev_size, interpolation=cv2.INTER_LANCZOS4)
+                    else:
+                        image = im2
+                    conds.append(process_cond_module(opt, image, cond_name, None))
+                    if idx != 0 and prev_size is None:  # skip style since we only care spatial cond size
+                        h, w = image.shape[:2]
+                        prev_size = (w, h)
+
+
 
         features = dict()
         for idx, cond_name in enumerate(activated_conds):
@@ -138,7 +156,7 @@ def change_visible(im1, im2, val):
 
 
 DESCRIPTION = '''# CoAdapter
-[Paper](https://arxiv.org/abs/2302.08453)               [GitHub](https://github.com/TencentARC/T2I-Adapter) 
+[GitHub](https://github.com/TencentARC/T2I-Adapter) [Details](https://github.com/TencentARC/T2I-Adapter/blob/main/docs/coadapter.md)
 
 This gradio demo is for a simple experience of CoAdapter:
 '''
@@ -175,18 +193,20 @@ with gr.Blocks(title="CoAdapter", css=".gr-box {border-color: #8136e2}") as demo
 
     with gr.Column():
         prompt = gr.Textbox(label="Prompt")
-        neg_prompt = gr.Textbox(label="Negative Prompt", value=DEFAULT_NEGATIVE_PROMPT)
-        scale = gr.Slider(label="Guidance Scale (Classifier free guidance)", value=7.5, minimum=1, maximum=20, step=0.1)
-        n_samples = gr.Slider(label="Num samples", value=1, minimum=1, maximum=8, step=1)
-        seed = gr.Slider(label="Seed", value=42, minimum=0, maximum=10000, step=1)
-        steps = gr.Slider(label="Steps", value=50, minimum=10, maximum=100, step=1)
-        resize_short_edge = gr.Slider(label="Image resolution", value=512, minimum=320, maximum=1024, step=1)
-        cond_tau = gr.Slider(
-            label="timestamp parameter that determines until which step the adapter is applied",
-            value=1.0,
-            minimum=0.1,
-            maximum=1.0,
-            step=0.05)
+
+        with gr.Accordion('Advanced options', open=False):
+            neg_prompt = gr.Textbox(label="Negative Prompt", value=DEFAULT_NEGATIVE_PROMPT)
+            scale = gr.Slider(label="Guidance Scale (Classifier free guidance)", value=7.5, minimum=1, maximum=20, step=0.1)
+            n_samples = gr.Slider(label="Num samples", value=1, minimum=1, maximum=8, step=1)
+            seed = gr.Slider(label="Seed", value=42, minimum=0, maximum=10000, step=1)
+            steps = gr.Slider(label="Steps", value=50, minimum=10, maximum=100, step=1)
+            resize_short_edge = gr.Slider(label="Image resolution", value=512, minimum=320, maximum=1024, step=1)
+            cond_tau = gr.Slider(
+                label="timestamp parameter that determines until which step the adapter is applied",
+                value=1.0,
+                minimum=0.1,
+                maximum=1.0,
+                step=0.05)
 
     with gr.Row():
         submit = gr.Button("Generate")
