@@ -4,19 +4,18 @@
 
 <div align="center">
 
-💥 [![Huggingface CoAdapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter) **(CoAdapter)**, [![Huggingface T2I-Adapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter) **(T2I-Adapter)**
+💥 **CoAdapter:**[![Huggingface CoAdapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter) **|** **T2I-Adapter:**[![Huggingface T2I-Adapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 
- ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test) **|** 🏰[**Adapter Zoo**](docs/AdapterZoo.md)  **|** 🎨[**Demos**](docs/examples.md)
+ 🎨[**Demos**](docs/examples.md)**|**⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test) **|** 🏰[**Adapter Zoo**](docs/AdapterZoo.md)
 </div>
 
----
 Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models](https://arxiv.org/abs/2302.08453)**.
 
-</p>
+---
 
 </div>
 
-# 🚩 **New Features/Updates**
+### 🚩 **New Features/Updates**
 
 - ✅ Mar. 16, 2023. We add **CoAdapter** (**Co**mposable **Adapter**). The online Huggingface Gadio has been updated [![Huggingface Gradio (CoAdapter)](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter). You can also try the [local gradio demo](app_coadapter.py).
 - ✅ Mar. 16, 2023. We have shrunk the git repo with [bfg](https://rtyley.github.io/bfg-repo-cleaner/).  If you encounter any issues when pulling or pushing, you can try re-cloning the repository. Sorry for the inconvenience.
@@ -28,8 +27,8 @@ Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Con
 ---
 <div align="center">
 
-  🔥🔥🔥 Support **cool composable Adapter (CoAdapter)** 
-  
+  🔥🔥🔥 Support **CoAdapter** (**Co**mposable **Adapter**). <br>You can find the details and demos about CoAdapter from [coadapter.md](docs/coadapter.md)
+
   <!-- Try the updated Huggingface demo  [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter). -->
 
 </div>
@@ -38,7 +37,7 @@ Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Con
 <p align="center">
   <img src="https://user-images.githubusercontent.com/17445847/225639246-26ee67a9-a9d9-47e4-b3bf-813d570e3d96.png" height=320>
 
-   You can find the details and demos about CoAdapter from [coadapter.md](docs/coadapter.md)
+
   <img src="https://user-images.githubusercontent.com/17445847/225656254-f0aff320-42fc-49bf-b8ff-9a779ad68db1.png" height=450>
   <img src="https://user-images.githubusercontent.com/17445847/225658981-51d775cd-c635-457f-8e60-24848369ff51.png" height=450>
   <!-- You can find more examples [here](docs/examples.md) -->
