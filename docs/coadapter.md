@@ -24,8 +24,17 @@ CoAdapter is inspired by [Composer](https://github.com/damo-vilab/composer). How
 
 ## Benefits from CoAdapter
 
-1.
+CoAdapter offers two advantages over the original T2I-Adapter.
 
-2.
+The following CoAdapter results are based on *coadapter-sd15v1*.
+
+You can try CoAdapter in [![Huggingface CoAdapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter).
+
+1. CoAdapter has improved **composability**, especially for the style modality, due to the joint training of multiple adapters.
+
+| Input 1 | Input 2 |  Input3   | Prompt and seed | T2I-Adapter       | **CoAdapter** |
+| :-----: | :-----: |  :-----:  |:-----: | :-----:    | :-----: |
+|<img width="200" alt="image" src="https://user-images.githubusercontent.com/17445847/226320934-bb332846-cccc-4aad-bf77-318a43eba6e2.jpg"> <br>Skecth: 1.0     |<img width="200" alt="image" src="https://user-images.githubusercontent.com/17445847/226320880-8ffe6e1d-de8a-45d2-9739-53024b86b1b2.png"> <br>Style: 1.0  |   <img width="200" alt="image" src="https://user-images.githubusercontent.com/17445847/226320922-588fa6c7-956d-4ce7-a707-a10f524d9c9c.png"> <br>Color: 1.0    |  "motorbike", seed=993      |    <img width="200" alt="image" src="https://user-images.githubusercontent.com/17445847/226326697-12657ad0-dea8-4fd0-9410-70c8a1bc5304.png">         |  <img width="200" alt="image" src="https://user-images.githubusercontent.com/17445847/226321639-55cea2d5-aa6a-49ac-a647-c37d9b75009e.png">       |
+|<img width="200" alt="image" src="https://user-images.githubusercontent.com/17445847/226330248-2a61d1c0-c39a-4d84-b3c0-61dc7613ae39.jpg"> <br>Skecth: 1.0     |<img width="200" alt="image" src="https://user-images.githubusercontent.com/17445847/226330258-d6fda31a-8631-4724-a342-93ea5269a74b.png"> <br>Style: 1.0  |       |  "a corgi", seed=42      |    <img width="200" alt="image" src="https://user-images.githubusercontent.com/17445847/226330281-b536fc6a-486e-4c7a-b0bb-bffdb12e66c7.png">         |  <img width="200" alt="image" src="https://user-images.githubusercontent.com/17445847/226330294-025dc300-78d1-46f0-b7c6-3d03c2595e10.png">       |
 
 ## Training
