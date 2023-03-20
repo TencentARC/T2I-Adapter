@@ -16,7 +16,24 @@ from ldm.modules.encoders.adapter import CoAdapterFuser
 
 torch.set_grad_enabled(False)
 
-supported_cond = ['style', 'color', 'sketch', 'depth', 'canny']
+class Condition:
+    def __init__(self, label, name):
+        self.label = label
+        self.name = name
+ 
+# creating list
+supported_cond = []
+ 
+# appending instances to list
+supported_cond.append(Condition('style_1', 'style'))
+supported_cond.append(Condition('style_2', 'style'))
+supported_cond.append(Condition('style_3', 'style'))
+supported_cond.append(Condition('color_1', 'color'))
+supported_cond.append(Condition('sketch_1', 'sketch'))
+supported_cond.append(Condition('depth_1', 'depth'))
+supported_cond.append(Condition('canny_1', 'canny'))
+
+
 
 # config
 parser = argparse.ArgumentParser()
@@ -34,8 +51,8 @@ parser.add_argument(
 )
 global_opt = parser.parse_args()
 global_opt.config = 'configs/stable-diffusion/sd-v1-inference.yaml'
-for cond_name in supported_cond:
-    setattr(global_opt, f'{cond_name}_adapter_ckpt', f'models/coadapter-{cond_name}-sd15v1.pth')
+for cond in supported_cond:
+    setattr(global_opt, f'{cond.name}_adapter_ckpt', f'models/coadapter-{cond.name}-sd15v1.pth')
 global_opt.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 global_opt.max_resolution = 512 * 512
 global_opt.sampler = 'ddim'
@@ -75,36 +92,36 @@ def run(*args):
         conds = []
         activated_conds = []
         for idx, (b, im1, im2, cond_weight) in enumerate(zip(*inps)):
-            cond_name = supported_cond[idx]
+            cond = supported_cond[idx]
             if b == 'Nothing':
-                if cond_name in adapters:
-                    adapters[cond_name]['model'] = adapters[cond_name]['model'].cpu()
+                if cond.label in adapters:
+                    adapters[cond.label]['model'] = adapters[cond.label]['model'].cpu()
             else:
-                activated_conds.append(cond_name)
-                if cond_name in adapters:
-                    adapters[cond_name]['model'] = adapters[cond_name]['model'].to(opt.device)
+                activated_conds.append(cond)
+                if cond.label in adapters:
+                    adapters[cond.label]['model'] = adapters[cond.label]['model'].to(opt.device)
                 else:
-                    adapters[cond_name] = get_adapters(opt, getattr(ExtraCondition, cond_name))
-                adapters[cond_name]['cond_weight'] = cond_weight
+                    adapters[cond.label] = get_adapters(opt, getattr(ExtraCondition, cond.name))
+                adapters[cond.label]['cond_weight'] = cond_weight
 
-                process_cond_module = getattr(api, f'get_cond_{cond_name}')
+                process_cond_module = getattr(api, f'get_cond_{cond.name}')
 
                 if b == 'Image':
-                    if cond_name not in cond_models:
-                        cond_models[cond_name] = get_cond_model(opt, getattr(ExtraCondition, cond_name))
-                    conds.append(process_cond_module(opt, im1, 'image', cond_models[cond_name]))
+                    if cond.label not in cond_models:
+                        cond_models[cond.label] = get_cond_model(opt, getattr(ExtraCondition, cond.name))
+                    conds.append(process_cond_module(opt, im1, 'image', cond_models[cond.label]))
                 else:
-                    conds.append(process_cond_module(opt, im2, cond_name, None))
+                    conds.append(process_cond_module(opt, im2, cond.name, None))
 
         features = dict()
-        for idx, cond_name in enumerate(activated_conds):
-            cur_feats = adapters[cond_name]['model'](conds[idx])
+        for idx, cond in enumerate(activated_conds):
+            cur_feats = adapters[cond.label]['model'](conds[idx])
             if isinstance(cur_feats, list):
                 for i in range(len(cur_feats)):
-                    cur_feats[i] *= adapters[cond_name]['cond_weight']
+                    cur_feats[i] *= adapters[cond.label]['cond_weight']
             else:
-                cur_feats *= adapters[cond_name]['cond_weight']
-            features[cond_name] = cur_feats
+                cur_feats *= adapters[cond.label]['cond_weight']
+            features[cond] = cur_feats
 
         adapter_features, append_to_context = coadapter_fuser(features)
 
@@ -151,17 +168,17 @@ with gr.Blocks(title="CoAdapter", css=".gr-box {border-color: #8136e2}") as demo
     cond_weights = []
 
     with gr.Row():
-        for cond_name in supported_cond:
+        for cond in supported_cond:
             with gr.Box():
                 with gr.Column():
                     btn1 = gr.Radio(
-                        choices=["Image", cond_name, "Nothing"],
-                        label=f"Input type for {cond_name}",
+                        choices=["Image", cond.name, "Nothing"],
+                        label=f"Input type for {cond.label}",
                         interactive=True,
                         value="Nothing",
                     )
                     im1 = gr.Image(source='upload', label="Image", interactive=True, visible=False, type="numpy")
-                    im2 = gr.Image(source='upload', label=cond_name, interactive=True, visible=False, type="numpy")
+                    im2 = gr.Image(source='upload', label=cond.label, interactive=True, visible=False, type="numpy")
                     cond_weight = gr.Slider(
                         label="Condition weight", minimum=0, maximum=5, step=0.05, value=1, interactive=True)
 

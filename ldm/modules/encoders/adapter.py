@@ -285,14 +285,14 @@ class CoAdapterFuser(nn.Module):
         if len(features) == 0:
             return None, None
         inputs = []
-        for cond_name in features.keys():
-            task_idx = getattr(ExtraCondition, cond_name).value
-            if not isinstance(features[cond_name], list):
-                inputs.append(features[cond_name] + self.task_embedding[task_idx])
+        for cond in features.keys():
+            task_idx = getattr(ExtraCondition, cond.name).value
+            if not isinstance(features[cond], list):
+                inputs.append(features[cond] + self.task_embedding[task_idx])
                 continue
 
             feat_seq = []
-            for idx, feature_map in enumerate(features[cond_name]):
+            for idx, feature_map in enumerate(features[cond]):
                 feature_vec = torch.mean(feature_map, dim=(2, 3))
                 feature_vec = self.spatial_feat_mapping[idx](feature_vec)
                 feat_seq.append(feature_vec)
@@ -311,10 +311,10 @@ class CoAdapterFuser(nn.Module):
         ret_feat_map = None
         ret_feat_seq = None
         cur_seq_idx = 0
-        for cond_name in features.keys():
-            if not isinstance(features[cond_name], list):
-                length = features[cond_name].size(1)
-                transformed_feature = features[cond_name] * ((x[:, cur_seq_idx:cur_seq_idx+length] @ self.seq_proj) + 1)
+        for cond in features.keys():
+            if not isinstance(features[cond], list):
+                length = features[cond].size(1)
+                transformed_feature = features[cond] * ((x[:, cur_seq_idx:cur_seq_idx+length] @ self.seq_proj) + 1)
                 if ret_feat_seq is None:
                     ret_feat_seq = transformed_feature
                 else:
@@ -322,12 +322,12 @@ class CoAdapterFuser(nn.Module):
                 cur_seq_idx += length
                 continue
 
-            length = len(features[cond_name])
+            length = len(features[cond])
             transformed_feature_list = []
             for idx in range(length):
                 alpha = self.spatial_ch_projs[idx](x[:, cur_seq_idx+idx])
                 alpha = alpha.unsqueeze(-1).unsqueeze(-1) + 1
-                transformed_feature_list.append(features[cond_name][idx] * alpha)
+                transformed_feature_list.append(features[cond][idx] * alpha)
             if ret_feat_map is None:
                 ret_feat_map = transformed_feature_list
             else:
