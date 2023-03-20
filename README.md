@@ -4,22 +4,37 @@
 
 <div align="center">
 
-💥 [![Huggingface T2I-Adapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter) **(T2I-Adapter)**, [![Huggingface CoAdapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter) **(CoAdapter)** **|** ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test)
+💥 [![Huggingface CoAdapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter) **(CoAdapter)**, [![Huggingface T2I-Adapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter) **(T2I-Adapter)**
 
-🏰[**Adapter Zoo**](docs/AdapterZoo.md)  **|** 🎨[**Demos**](docs/examples.md)
+ ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test) **|** 🏰[**Adapter Zoo**](docs/AdapterZoo.md)  **|** 🎨[**Demos**](docs/examples.md)
 </div>
 
 ---
+Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models](https://arxiv.org/abs/2302.08453)**.
 
-<div align="center">
-
-  <!-- 🔥🔥🔥 Support **cool composable T2I-Adapter with style and color** control. Try the updated Huggingface demo  [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter). -->
-
-  Add **CoAdapter** (**Co**mposable **Adapter**). The online Huggingface Gadio has been updated [![Huggingface Gradio (CoAdapter)](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter). You can also try the [local gradio demo](app_coadapter.py).
+</p>
 
 </div>
 
+# 🚩 **New Features/Updates**
+
+- ✅ Mar. 16, 2023. We add **CoAdapter** (**Co**mposable **Adapter**). The online Huggingface Gadio has been updated [![Huggingface Gradio (CoAdapter)](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter). You can also try the [local gradio demo](app_coadapter.py).
+- ✅ Mar. 16, 2023. We have shrunk the git repo with [bfg](https://rtyley.github.io/bfg-repo-cleaner/).  If you encounter any issues when pulling or pushing, you can try re-cloning the repository. Sorry for the inconvenience.
+- ✅ Mar. 3, 2023. Add a [*color adapter (spatial palette)*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models), which has only **17M parameters**.
+- ✅ Mar. 3, 2023. Add four new adapters [*style, color, openpose and canny*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
+- ✅ Feb. 23, 2023. Add the depth adapter [*t2iadapter_depth_sd14v1.pth*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
+- ✅ Feb. 15, 2023. Release T2I-Adapter.
+
+---
 <div align="center">
+
+  🔥🔥🔥 Support **cool composable Adapter (CoAdapter)** 
+  
+  <!-- Try the updated Huggingface demo  [![Huggingface Gradio](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter). -->
+
+</div>
+
+<!-- <div align="center"> -->
 <p align="center">
   <img src="https://user-images.githubusercontent.com/17445847/225639246-26ee67a9-a9d9-47e4-b3bf-813d570e3d96.png" height=320>
 
@@ -27,21 +42,10 @@
   <img src="https://user-images.githubusercontent.com/17445847/225656254-f0aff320-42fc-49bf-b8ff-9a779ad68db1.png" height=450>
   <img src="https://user-images.githubusercontent.com/17445847/225658981-51d775cd-c635-457f-8e60-24848369ff51.png" height=450>
   <!-- You can find more examples [here](docs/examples.md) -->
-
 </p>
 
-</div>
-
-🚩 **New Features/Updates**
-
-- ✅ Mar. 16, 2023. We have shrunk the git repo with [bfg](https://rtyley.github.io/bfg-repo-cleaner/).  If you encounter any issues when pulling or pushing, you can try re-cloning the repository. Sorry for the inconvenience.
-- ✅ Mar. 3, 2023. Add a [*color adapter (spatial palette)*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models), which has only **17M parameters**.
-- ✅ Mar. 3, 2023. Add four new adapters [*style, color, openpose and canny*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
-- ✅ Feb. 23, 2023. Add the depth adapter [*t2iadapter_depth_sd14v1.pth*](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
-- ✅ Feb. 15, 2023. Release T2I-Adapter.
-
-Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models](https://arxiv.org/abs/2302.08453)**.
-
+---
+# Introduction
 <p align="center">
   <img src="assets/overview1.png" height=250>
 </p>
@@ -55,7 +59,7 @@ We can train various adapters according to different conditions, and achieve ric
   <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/teaser.png" height=500>
 </p>
 
-### ⏬ Download Models
+# ⏬ Download Models
 
 Put the downloaded models in the `T2I-Adapter/models` folder.
 
@@ -64,7 +68,7 @@ Put the downloaded models in the `T2I-Adapter/models` folder.
 3. [Optional] If you want to use mmpose adapter, you need to download the pretrained keypose detection models include [FasterRCNN (human detection)](https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth) and [HRNet (pose detection)](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth).
 
 
-### 🔧 Dependencies and Installation
+# 🔧 Dependencies and Installation
 
 - Python >= 3.6 (Recommend to use [Anaconda](https://www.anaconda.com/download/#linux) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html))
 - [PyTorch >= 1.4](https://pytorch.org/)
@@ -73,7 +77,7 @@ pip install -r requirements.txt
 ```
 - If you want to use the full function of keypose-guided generation, you need to install MMPose. For details please refer to <https://github.com/open-mmlab/mmpose>.
 
-### 💻 How to Test
+# 💻 How to Test
 
 #### Download Examples (optional)
 We provide some [example](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/examples) inputs in huggingface, you can download these examples by:
@@ -229,7 +233,7 @@ The following is the detailed structure of a **Stable Diffusion** model with the
 
 * All the usage of three T2I-Adapters (i.e, sketch, keypose and segmentation) are integrated into [Huggingface Spaces]() 🤗 using [Gradio](). Have fun with the Web Demo.  -->
 
-## 🚀 Interesting Applications
+# 🚀 Interesting Applications
 
 ### Stable Diffusion results guided with the sketch T2I-Adapter
 
@@ -306,7 +310,7 @@ Stable Diffusion results guided with the segmentation and sketch adapters togeth
   <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/multiple_adapters.png">
 </p>
 
-## 🤗 Acknowledgements
+# 🤗 Acknowledgements
 Thank haofanwang for providing a tutorial of [T2I-Adapter diffusers](https://github.com/haofanwang/T2I-Adapter-for-Diffusers).
 
 
