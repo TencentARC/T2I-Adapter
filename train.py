@@ -51,7 +51,14 @@ def get_parser(**parser_kwargs):
         type=str,
         nargs="?",
         default="",
-        help="path to stable diffusion checkpoint to load SD model state from",
+        help="path to stable diffusion checkpoint to load adapter model state from",
+    )
+    parser.add_argument(
+        "--coadapter_finetune_from",
+        type=str,
+        nargs="?",
+        default="",
+        help="path to stable diffusion checkpoint to load CoAdapter state from",
     )
     parser.add_argument(
         "-n",
@@ -337,6 +344,8 @@ if __name__ == "__main__":
         load_pretrained_ckp(model, opt.sd_finetune_from, 'stable diffusion')
         if not opt.adapter_finetune_from == "":
             load_pretrained_ckp(model, opt.adapter_finetune_from, 'adapter')
+        if not opt.coadapter_finetune_from == "":
+            load_pretrained_ckp(model, opt.coadapter_finetune_from, 'coadapter')
 
         # trainer and callbacks
         trainer_kwargs = dict()

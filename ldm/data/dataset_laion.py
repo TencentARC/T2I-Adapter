@@ -70,7 +70,9 @@ class WebDataModuleFromConfig(pl.LightningDataModule):
         image_transforms = [instantiate_from_config(tt) for tt in dataset_config.image_transforms]
         image_transforms = transforms.Compose(image_transforms)
 
-        process = instantiate_from_config(dataset_config['process'])
+        process_list = []
+        for process_config in dataset_config['process']:
+            process_list.append(instantiate_from_config(process_config))
 
         shuffle = dataset_config.get('shuffle', 0)
         shardshuffle = shuffle > 0
@@ -87,7 +89,9 @@ class WebDataModuleFromConfig(pl.LightningDataModule):
         dset = (
             dset.select(self.filter_keys).decode('pil',
                                                  handler=wds.warn_and_continue).select(self.filter_size).map_dict(
-                                                     jpg=image_transforms, handler=wds.warn_and_continue).map(process))
+                jpg=image_transforms, handler=wds.warn_and_continue))
+        for process in process_list:
+            dset = dset.map(process)
         dset = (dset.batched(self.batch_size, partial=False, collation_fn=dict_collation_fn))
 
         loader = wds.WebLoader(dset, batch_size=None, shuffle=False, num_workers=self.num_workers)
@@ -121,10 +125,20 @@ class WebDataModuleFromConfig(pl.LightningDataModule):
 
 if __name__ == '__main__':
     from omegaconf import OmegaConf
-    config = OmegaConf.load("configs/stable-diffusion/train_canny_sd_v1.yaml")
+
+    config = OmegaConf.load("configs/pl_train/coadapter-v1-train.yaml")
     datamod = WebDataModuleFromConfig(**config["data"]["params"])
     dataloader = datamod.train_dataloader()
 
-    for batch in dataloader:
+    from basicsr.utils import tensor2img
+    import cv2
+    save_root = 'tmp/coadapter'
+    os.makedirs(save_root, exist_ok=True)
+
+    for idx, batch in enumerate(dataloader):
         print(batch.keys())
-        print(batch['jpg'].shape)
+        print(batch['jpg'].shape, torch.min(batch['jpg']), torch.max(batch['jpg']))
+        img = tensor2img(batch['jpg'])
+        cv2.imwrite(f'{save_root}/{idx:03d}.png', img)
+        if idx > 20:
+            break

@@ -252,7 +252,15 @@ def get_adapters(opt, cond_type: ExtraCondition):
     ckpt_path = getattr(opt, f'{cond_type.name}_adapter_ckpt', None)
     if ckpt_path is None:
         ckpt_path = getattr(opt, 'adapter_ckpt')
-    adapter['model'].load_state_dict(torch.load(ckpt_path))
+    state_dict = read_state_dict(ckpt_path)
+    new_state_dict = {}
+    for k, v in state_dict.items():
+        if k.startswith('adapter.'):
+            new_state_dict[k[len('adapter.'):]] = v
+        else:
+            new_state_dict[k] = v
+
+    adapter['model'].load_state_dict(new_state_dict)
 
     return adapter
 
