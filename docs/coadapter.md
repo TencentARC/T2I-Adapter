@@ -35,7 +35,16 @@ CoAdapter offers two advantages over the original T2I-Adapter. You can try CoAda
 |<img width="200" alt="image" src="https://user-images.githubusercontent.com/17445847/226330248-2a61d1c0-c39a-4d84-b3c0-61dc7613ae39.jpg"> <br>Skecth: 1.0     |<img width="150" alt="image" src="https://user-images.githubusercontent.com/17445847/226330258-d6fda31a-8631-4724-a342-93ea5269a74b.png"> <br>Style: 1.0  |       |  "a corgi"<br>seed=42      |    <img width="250" alt="image" src="https://user-images.githubusercontent.com/17445847/226330281-b536fc6a-486e-4c7a-b0bb-bffdb12e66c7.png">         |  <img width="300" alt="image" src="https://user-images.githubusercontent.com/17445847/226330294-025dc300-78d1-46f0-b7c6-3d03c2595e10.png">       |
 
 2. The joint training of CoAdapter can also enhance the generation quality of each individual adapter.
+   TODO
 
 The above results are based on *coadapter-sd15v1* and *t2iadapter-sd14v1*.
 
+## Useful Tips
+- **Condition weight is important**.  If the generated image is not well aligned with the condition, increase the corresponding `Condition weight`. If increasing `Condition weight` is ineffective or degrades image quality, try decreasing the `Condition weight` of other conditions.
+- **Start with fewer conditions**. If you plan to use more than two conditions to control the model, it is recommended to start with only one or two conditions. Once you have found the suitable `Condition weight` for existing conditions, gradually append the new conditions.
+- It is recommended to use a step size of 0.1 to adjust `Condition weight`. From experience, `Condition weight` will not be less than 0.5 or greater than 1.5
+
 ## Training
+```bash
+python train.py -t --base configs/pl_train/coadapter-v1-train.yaml --gpus 0,1,2,3,4,5,6,7 --scale_lr False --num_nodes 1 --sd_finetune_from models/v1-5-pruned-emaonly.ckpt --name coadapter-v1-train --auto_resume
+```

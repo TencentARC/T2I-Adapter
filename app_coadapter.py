@@ -158,7 +158,11 @@ def change_visible(im1, im2, val):
 DESCRIPTION = '''# CoAdapter
 [GitHub](https://github.com/TencentARC/T2I-Adapter) [Details](https://github.com/TencentARC/T2I-Adapter/blob/main/docs/coadapter.md)
 
-This gradio demo is for a simple experience of CoAdapter:
+This gradio demo is for a simple experience of CoAdapter. Following are some useful tips:
+- **Condition weight is important**.  If the generated image is not well aligned with the condition, increase the corresponding `Condition weight`. If increasing `Condition weight` is ineffective or degrades image quality, try decreasing the `Condition weight` of other conditions.
+- **Start with fewer conditions**. If you plan to use more than two conditions to control the model, it is recommended to start with only one or two conditions. Once you have found the suitable `Condition weight` for existing conditions, gradually append the new conditions.
+- It is recommended to use a step size of 0.1 to adjust `Condition weight`. From experience, `Condition weight` will not be less than 0.5 or greater than 1.5
+
 '''
 with gr.Blocks(title="CoAdapter", css=".gr-box {border-color: #8136e2}") as demo:
     gr.Markdown(DESCRIPTION)

@@ -6,7 +6,7 @@
 
 💥 **CoAdapter:**[![Huggingface CoAdapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter) **|** **T2I-Adapter:**[![Huggingface T2I-Adapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
 
- 🎨[**Demos**](docs/examples.md)**|**⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test) **|** 🏰[**Adapter Zoo**](docs/AdapterZoo.md)
+ 🎨[**Demos**](docs/examples.md) **|** ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test) **|** 🏰[**Adapter Zoo**](docs/AdapterZoo.md)
 </div>
 
 Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models](https://arxiv.org/abs/2302.08453)**.
