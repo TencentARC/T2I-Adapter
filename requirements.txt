@@ -5,7 +5,6 @@ basicsr==1.4.2
 einops==0.6.0
 omegaconf==2.3.0
 pytorch_lightning==1.5.9
-kornia==0.6.8
 gradio
 opencv-python
 pudb
