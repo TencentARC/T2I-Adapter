@@ -68,6 +68,8 @@ def get_cond_model(opt, cond_type: ExtraCondition):
 def get_cond_sketch(opt, cond_image, cond_inp_type, cond_model=None):
     if isinstance(cond_image, str):
         edge = cv2.imread(cond_image)
+        if color is None:
+            raise RuntimeError("Failed to read cond_image! Path for cond_image might be wrong.")
     else:
         # for gradio input, pay attention, it's rgb numpy
         edge = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
@@ -92,6 +94,8 @@ def get_cond_sketch(opt, cond_image, cond_inp_type, cond_model=None):
 def get_cond_seg(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         seg = cv2.imread(cond_image)
+        if color is None:
+            raise RuntimeError("Failed to read cond_image! Path for cond_image might be wrong.")
     else:
         seg = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
     seg = resize_numpy_image(seg, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
@@ -108,6 +112,8 @@ def get_cond_seg(opt, cond_image, cond_inp_type='image', cond_model=None):
 def get_cond_keypose(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         pose = cv2.imread(cond_image)
+        if color is None:
+            raise RuntimeError("Failed to read cond_image! Path for cond_image might be wrong.")
     else:
         pose = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
     pose = resize_numpy_image(pose, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
@@ -156,6 +162,8 @@ def get_cond_keypose(opt, cond_image, cond_inp_type='image', cond_model=None):
 def get_cond_depth(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         depth = cv2.imread(cond_image)
+        if color is None:
+            raise RuntimeError("Failed to read cond_image! Path for cond_image might be wrong.")
     else:
         depth = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
     depth = resize_numpy_image(depth, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
@@ -211,6 +219,8 @@ def get_cond_style(opt, cond_image, cond_inp_type='image', cond_model=None):
 def get_cond_color(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         color = cv2.imread(cond_image)
+        if color is None:
+            raise RuntimeError("Failed to read cond_image! Path for cond_image might be wrong.")
     else:
         color = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
     color = resize_numpy_image(color, max_resolution=opt.max_resolution, resize_short_edge=opt.resize_short_edge)
@@ -226,6 +236,8 @@ def get_cond_color(opt, cond_image, cond_inp_type='image', cond_model=None):
 def get_cond_openpose(opt, cond_image, cond_inp_type='image', cond_model=None):
     if isinstance(cond_image, str):
         openpose_keypose = cv2.imread(cond_image)
+        if color is None:
+            raise RuntimeError("Failed to read cond_image! Path for cond_image might be wrong.")
     else:
         openpose_keypose = cv2.cvtColor(cond_image, cv2.COLOR_RGB2BGR)
     openpose_keypose = resize_numpy_image(
