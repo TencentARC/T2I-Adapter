@@ -291,3 +291,85 @@ class DDIMSampler(object):
                                           unconditional_guidance_scale=unconditional_guidance_scale,
                                           unconditional_conditioning=unconditional_conditioning)
         return x_dec
+
+def ddim_sampling_reverse(self,
+                              num_steps=50,
+                              x_0=None,
+                              conditioning=None,
+                              eta=0.,
+                              verbose=False,
+                              unconditional_guidance_scale=7.5,
+                              unconditional_conditioning=None
+                              ):
+        """
+        obtain the inverted x_T noisy image
+        """
+        assert eta == 0., "eta should be 0. for deterministic sampling"
+        B = x_0.shape[0]
+        # scheduler
+        self.make_schedule(ddim_num_steps=num_steps, ddim_eta=eta, verbose=verbose)
+        self.register_buffer("ddim_sqrt_one_minus_alphas_prev", torch.tensor(1. - self.ddim_alphas_prev).sqrt())
+        # sampling
+        device = self.model.betas.device
+
+        intermediates = {"x_inter": [x_0], "pred_x0": []}
+
+        time_range = self.ddim_timesteps
+        print("selected steps for ddim inversion: ", time_range)
+        assert len(time_range) == num_steps, "time range should be same as num steps"
+
+        iterator = tqdm(time_range, desc='DDIM Inversion', total=num_steps)
+        x_t = x_0
+        for i, step in enumerate(iterator):
+            if i == 0:
+                step = 1
+            else:
+                step = time_range[i - 1]
+            ts = torch.full((B, ), step, device=device, dtype=torch.long)
+            outs = self.p_sample_ddim_reverse(x_t,
+                                              conditioning,
+                                              ts,
+                                              index=i,
+                                              unconditional_guidance_scale=unconditional_guidance_scale,
+                                              unconditional_conditioning=unconditional_conditioning
+                                              )
+            x_t, pred_x0 = outs
+            intermediates["x_inter"].append(x_t)
+            intermediates["pred_x0"].append(pred_x0)
+        return x_t, intermediates
+
+    def p_sample_ddim_reverse(self,
+                              x, c, t, index,
+                              unconditional_guidance_scale=1.,
+                              unconditional_conditioning=None):
+        B = x.shape[0]
+        device = x.device
+
+        if unconditional_conditioning is None or unconditional_guidance_scale == 1.:
+            e_t = self.model.apply_model(x, t, c)
+        else:
+            x_in = torch.cat([x] * 2)
+            t_in = torch.cat([t] * 2)
+            c_in = torch.cat([unconditional_conditioning, c])
+            e_t_uncond, e_t = self.model.apply_model(x_in, t_in, c_in).chunk(2)
+            e_t = e_t_uncond + unconditional_guidance_scale * (e_t - e_t_uncond)
+
+        # scheduler parameters
+        alphas = self.ddim_alphas
+        alphas_prev = self.ddim_alphas_prev
+        sqrt_one_minus_alphas_prev = self.ddim_sqrt_one_minus_alphas_prev
+
+        # select parameters corresponding to the currently considered timestep
+        alpha_cumprod_next = torch.full((B, 1, 1, 1), alphas[index], device=device)
+        alpha_cumprod_t = torch.full((B, 1, 1, 1), alphas_prev[index], device=device)
+        sqrt_one_minus_alpha_t = torch.full((B, 1, 1, 1), sqrt_one_minus_alphas_prev[index], device=device)
+
+        # current prediction for x_0
+        pred_x0 = (x - sqrt_one_minus_alpha_t * e_t) / alpha_cumprod_t.sqrt()
+
+        # direction pointing to x_t
+        dir_xt = (1. - alpha_cumprod_next).sqrt() * e_t
+
+        x_next = alpha_cumprod_next.sqrt() * pred_x0 + dir_xt
+
+        return x_next, pred_x0
