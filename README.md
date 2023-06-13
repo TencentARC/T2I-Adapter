@@ -309,8 +309,13 @@ Stable Diffusion results guided with the segmentation and sketch adapters togeth
   <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/multiple_adapters.png">
 </p>
 
-### Cooperating with Low-rank method to customize the concept of the generation result
-[Mix-of-Show](https://github.com/TencentARC/Mix-of-Show) designed by [Yuchao Gu](https://ycgu.site/)
+### Cooperating with Low-Rank Adapters for Controllable Multi-Concept Generation
+[Mix-of-Show](https://github.com/TencentARC/Mix-of-Show) designed by [Yuchao Gu](https://ycgu.site/), et al.
+
+<p align="center">
+  <img src="https://github.com/TencentARC/Mix-of-Show/raw/main/README.assets/anime_multi_result.jpg">
+</p>
+
 
 # 🤗 Acknowledgements
 Thank haofanwang for providing a tutorial of [T2I-Adapter diffusers](https://github.com/haofanwang/T2I-Adapter-for-Diffusers).
