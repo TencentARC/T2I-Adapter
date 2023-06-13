@@ -309,9 +309,11 @@ Stable Diffusion results guided with the segmentation and sketch adapters togeth
   <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/multiple_adapters.png">
 </p>
 
+### Cooperating with Low-rank method to customize the concept of the generation result
+[Mix-of-Show](https://github.com/TencentARC/Mix-of-Show) designed by [Yuchao Gu](https://ycgu.site/)
+
 # 🤗 Acknowledgements
 Thank haofanwang for providing a tutorial of [T2I-Adapter diffusers](https://github.com/haofanwang/T2I-Adapter-for-Diffusers).
-
 
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=TencentARC/T2I-Adapter)
 
