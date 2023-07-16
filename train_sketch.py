@@ -22,7 +22,7 @@ from ldm.models.diffusion.dpm_solver import DPMSolverSampler
 from ldm.models.diffusion.plms import PLMSSampler
 from ldm.modules.encoders.adapter import Adapter
 from ldm.util import instantiate_from_config
-from ldm.modules.structure_condition.model_edge import pidinet
+from ldm.modules.extra_condition.model_edge import pidinet
 
 
 def load_model_from_config(config, ckpt, verbose=False):
