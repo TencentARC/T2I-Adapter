@@ -73,7 +73,7 @@ class ResnetBlock(nn.Module):
         self.act = nn.ReLU()
         self.block2 = nn.Conv2d(out_c, out_c, ksize, 1, ps)
         if sk == False:
-            self.skep = nn.Conv2d(in_c, out_c, ksize, 1, ps)
+            self.skep = nn.Conv2d(out_c, out_c, ksize, 1, ps)
         else:
             self.skep = None
 
