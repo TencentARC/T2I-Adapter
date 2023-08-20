@@ -15,7 +15,7 @@ Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Con
 
 |   | SD-V1.4/1.5 | SD-XL | T2I-Adapter | T2I-Adapter-XL |
 | --- | --- |--- |--- |--- |
-| Parameters | 860M | 2.6B |77 M | 77 MB | |
+| Parameters | 860M | 2.6B |77 M | 77 M | |
 
 ## Inherit High-quality Generation from SDXL.
 
