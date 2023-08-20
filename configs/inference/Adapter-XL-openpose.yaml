@@ -1,0 +1,14 @@
+model:
+  params:
+    adapter_config:
+      name: openpose
+      target: Adapter.models.adapters.Adapter_XL
+      params:
+        cin: 768
+        channels: [320, 640, 1280, 1280]
+        nums_rb: 2
+        ksize: 1
+        sk: true
+        use_conv: false
+      # pretrained: /group/30042/chongmou/ft_local/Diffusion_part2/T2I-Adapter-XL/experiments/adapter_encoder_mid_openpose_extream_ft/checkpoint-9000/model_00.pth
+      pretrained: checkpoints/adapter-xl-openpose.pth
