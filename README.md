@@ -4,7 +4,8 @@
 
 <div align="center">
 
-💥 **CoAdapter:**[![Huggingface CoAdapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter) **|** **T2I-Adapter:**[![Huggingface T2I-Adapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter)
+ 💥**T2I-Adapter-XL:**[![GitHub](https://img.shields.io/badge/-GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/TencentARC/T2I-Adapter/tree/XL)
+**|** **CoAdapter:**[![Huggingface CoAdapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter) **|** **T2I-Adapter:**[![Huggingface T2I-Adapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter) 
 
  🎨[**Demos**](docs/examples.md) **|** ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test) **|** 🏰[**Adapter Zoo**](docs/AdapterZoo.md)
 </div>
@@ -16,6 +17,7 @@ Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Con
 </div>
 
 ### 🚩 **New Features/Updates**
+- ✅ Aug. 21, 2023. We release [T2I-Adapter-XL](https://github.com/TencentARC/T2I-Adapter/tree/XL), including sketch, canny, and keypoint. We still use the original recipe (77M parameters, a single inference) to drive [StableDiffusion-XL](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0). Due to the limited computing resources, those adapters still need further improvement. We are collaborating with [HuggingFace](https://huggingface.co/), and a more powerful adapter is in the works.
 
 - ✅ Jul. 13, 2023. [Stability AI](https://stability.ai/) release [Stable Doodle](https://stability.ai/blog/clipdrop-launches-stable-doodle), a groundbreaking sketch-to-image tool based on T2I-Adapter and [SDXL](https://huggingface.co/stabilityai/stable-diffusion-xl-base-0.9). It makes drawing easier.
 
@@ -37,16 +39,6 @@ https://user-images.githubusercontent.com/73707470/253800159-c7e12362-1ea1-4b20-
 
 </div>
 
-<!-- <div align="center"> -->
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/17445847/225639246-26ee67a9-a9d9-47e4-b3bf-813d570e3d96.png" height=320>
-
-
-  <img src="https://user-images.githubusercontent.com/17445847/225656254-f0aff320-42fc-49bf-b8ff-9a779ad68db1.png" height=450>
-  <img src="https://user-images.githubusercontent.com/17445847/225658981-51d775cd-c635-457f-8e60-24848369ff51.png" height=450>
-  <!-- You can find more examples [here](docs/examples.md) -->
-</p>
-
 ---
 # Introduction
 <p align="center">
@@ -58,9 +50,9 @@ We propose T2I-Adapter, a **simple and small (~70M parameters, ~300M storage spa
 T2I-Adapter aligns internal knowledge in T2I models with external control signals.
 We can train various adapters according to different conditions, and achieve rich control and editing effects.
 
-<p align="center">
+<!-- <p align="center">
   <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets/teaser.png" height=500>
-</p>
+</p> -->
 
 # ⏬ Download Models
 
@@ -94,6 +86,16 @@ You need to download the pretrained CoAdapters from [huggingface](https://huggin
 # test for stable diffusion v1.5
 python app_coadapter.py --sd_ckpt models/v1-5-pruned-emaonly.ckpt
 ```
+
+<!-- <div align="center"> -->
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/17445847/225639246-26ee67a9-a9d9-47e4-b3bf-813d570e3d96.png" height=320>
+
+
+  <img src="https://user-images.githubusercontent.com/17445847/225656254-f0aff320-42fc-49bf-b8ff-9a779ad68db1.png" height=450>
+  <!-- <img src="https://user-images.githubusercontent.com/17445847/225658981-51d775cd-c635-457f-8e60-24848369ff51.png" height=450> -->
+  <!-- You can find more examples [here](docs/examples.md) -->
+</p>
 
 #### **Gradio Demo for T2I-Adapters**
 ```bash
