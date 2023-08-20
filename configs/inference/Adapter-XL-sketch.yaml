@@ -1,0 +1,13 @@
+model:
+  params:
+    adapter_config:
+      name: sketch
+      target: Adapter.models.adapters.Adapter_XL
+      params:
+        cin: 256
+        channels: [320, 640, 1280, 1280]
+        nums_rb: 2
+        ksize: 1
+        sk: true
+        use_conv: false
+      pretrained: checkpoints/adapter-xl-sketch.pth

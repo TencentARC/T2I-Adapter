@@ -1,0 +1,38 @@
+model:
+  params:
+    adapter_config:
+      name: sketch
+      target: Adapter.models.adapters.Adapter_XL
+      params:
+        cin: 256
+        channels: [320, 640, 1280, 1280]
+        nums_rb: 2
+        ksize: 1
+        sk: true
+        use_conv: false
+      pretrained: checkpoints/adapter-xl-sketch.pth
+data:
+  target: dataset.dataset_laion.WebDataModuleFromConfig_Laion_Lexica
+  params:
+    tar_base1: "data/LAION_6plus"
+    tar_base2: "data/WebDataset"
+    batch_size: 2
+    num_workers: 8
+    multinode: True
+    train:
+      shards1: 'train_{00000..00006}/{00000..00171}.tar'
+      shards2: 'lexica-{000000..000099}.tar'
+      shards1_prob: 0.7
+      shards2_prob: 0.3
+      shuffle: 10000
+      image_key: jpg
+      image_transforms:
+      - target: torchvision.transforms.Resize
+        params:
+          size: 1024
+          interpolation: 3
+      - target: torchvision.transforms.RandomCrop
+        params:
+          size: 1024
+      process:
+        target: dataset.utils.AddEqual_fp16
