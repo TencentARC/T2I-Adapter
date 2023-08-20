@@ -5,8 +5,10 @@
 
 Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models](https://arxiv.org/abs/2302.08453)** based on [Stable Diffusion-XL](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0).
 
----
+
 🚩 Due to the limited computing resources, those adapters are not fully trained. We are collaborating with [HuggingFace](https://huggingface.co/), and a more powerful adapter is in the works.
+
+---
 
 # 🔥🔥🔥 Why T2I-Adapter-XL? 
 ## The Original Recipe Drives Larger SD.
@@ -19,17 +21,17 @@ Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Con
 
 - Keypoint-guided
 <p align="center">
-  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets_XL/g_pose.png" height=320>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets_XL/g_pose.png" height=520>
 </p>
 
 - Sketch-guided
 <p align="center">
-  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets_XL/g_sketch.PNG" height=320>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets_XL/g_sketch.PNG" height=520>
 </p>
 
 - Canny-guided
 <p align="center">
-  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets_XL/g_canny.png" height=320>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets_XL/g_canny.png" height=520>
 </p>
 
 # 🔧 Dependencies and Installation
