@@ -4,7 +4,7 @@
 
 <div align="center">
 
- 💥**T2I-Adapter-XL:**[![GitHub](https://img.shields.io/badge/-GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/TencentARC/T2I-Adapter/tree/XL)
+ 💥**T2I-Adapter-SDXL:**[![GitHub](https://img.shields.io/badge/-GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/TencentARC/T2I-Adapter/tree/XL)
 **|** **CoAdapter:**[![Huggingface CoAdapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter) **|** **T2I-Adapter:**[![Huggingface T2I-Adapter](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/T2I-Adapter) 
 
  🎨[**Demos**](docs/examples.md) **|** ⏬[**Download Models**](#-download-models) **|** 💻[**How to Test**](#-how-to-test) **|** 🏰[**Adapter Zoo**](docs/AdapterZoo.md)
@@ -17,7 +17,7 @@ Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Con
 </div>
 
 ### 🚩 **New Features/Updates**
-- ✅ Aug. 21, 2023. We release [T2I-Adapter-XL](https://github.com/TencentARC/T2I-Adapter/tree/XL), including sketch, canny, and keypoint. We still use the original recipe (77M parameters, a single inference) to drive [StableDiffusion-XL](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0). Due to the limited computing resources, those adapters still need further improvement. We are collaborating with [HuggingFace](https://huggingface.co/), and a more powerful adapter is in the works.
+- ✅ Aug. 21, 2023. We release [T2I-Adapter-SDXL](https://github.com/TencentARC/T2I-Adapter/tree/XL), including sketch, canny, and keypoint. We still use the original recipe (77M parameters, a single inference) to drive [StableDiffusion-XL](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0). Due to the limited computing resources, those adapters still need further improvement. We are collaborating with [HuggingFace](https://huggingface.co/), and a more powerful adapter is in the works.
 
 - ✅ Jul. 13, 2023. [Stability AI](https://stability.ai/) release [Stable Doodle](https://stability.ai/blog/clipdrop-launches-stable-doodle), a groundbreaking sketch-to-image tool based on T2I-Adapter and [SDXL](https://huggingface.co/stabilityai/stable-diffusion-xl-base-0.9). It makes drawing easier.
 
