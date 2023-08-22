@@ -21,7 +21,7 @@ Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Con
 
 - Keypoint-guided
 <p align="center">
-  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets_XL/g_pose.png" height=520>
+  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets_XL/g_pose2.png" height=520>
 </p>
 
 - Sketch-guided
