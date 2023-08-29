@@ -56,6 +56,62 @@ We train with `FP16` data precision on `4` NVIDIA `A100` GPUs.
 # 💻 How to Test
 Inference requires at least `15GB` of GPU memory.
 
+## Quick start with [diffusers](https://github.com/huggingface/diffusers)
+
+1. Images are first downloaded into the appropriate *control image* format.
+ 2. The *control image* and *prompt* are passed to the [`StableDiffusionXLAdapterPipeline`].
+
+Let's have a look at a simple example using the [Sketch Adapter](https://huggingface.co/Adapter/t2iadapter/tree/main/sketch_sdxl_1.0).
+
+```python
+from diffusers.utils import load_image
+
+sketch_image = load_image("https://huggingface.co/Adapter/t2iadapter/resolve/main/sketch.png").convert("L")
+```
+
+![img](https://huggingface.co/Adapter/t2iadapter/resolve/main/sketch.png)
+
+Then, create the adapter pipeline
+
+```py
+import torch
+from diffusers import (
+    T2IAdapter,
+    StableDiffusionXLAdapterPipeline,
+    DDPMScheduler
+)
+from diffusers.models.unet_2d_condition import UNet2DConditionModel
+
+model_id = "stabilityai/stable-diffusion-xl-base-1.0"
+adapter = T2IAdapter.from_pretrained("Adapter/t2iadapter", subfolder="sketch_sdxl_1.0",torch_dtype=torch.float16, adapter_type="full_adapter_xl")
+scheduler = DDPMScheduler.from_pretrained(model_id, subfolder="scheduler")
+
+pipe = StableDiffusionXLAdapterPipeline.from_pretrained(
+    model_id, adapter=adapter, safety_checker=None, torch_dtype=torch.float16, variant="fp16", scheduler=scheduler
+)
+
+pipe.to("cuda")
+```
+
+Finally, pass the prompt and control image to the pipeline
+
+```py
+# fix the random seed, so you will get the same result as the example
+generator = torch.Generator().manual_seed(42)
+
+sketch_image_out = pipe(
+    prompt="a photo of a dog in real world, high quality", 
+    negative_prompt="extra digit, fewer digits, cropped, worst quality, low quality", 
+    image=sketch_image, 
+    generator=generator, 
+    guidance_scale=7.5
+).images[0]
+```
+
+![img](https://huggingface.co/Adapter/t2iadapter/resolve/main/sketch_output.png)
+
+## Local test examples
+
 - Sketch example:
 
 ```bash
