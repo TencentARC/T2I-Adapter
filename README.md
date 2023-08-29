@@ -69,7 +69,9 @@ from diffusers.utils import load_image
 sketch_image = load_image("https://huggingface.co/Adapter/t2iadapter/resolve/main/sketch.png").convert("L")
 ```
 
-![img](https://huggingface.co/Adapter/t2iadapter/resolve/main/sketch.png)
+<p align="center">
+  <img src="https://huggingface.co/Adapter/t2iadapter/resolve/main/sketch.png" height=520>
+</p>
 
 Then, create the adapter pipeline
 
@@ -108,7 +110,9 @@ sketch_image_out = pipe(
 ).images[0]
 ```
 
-![img](https://huggingface.co/Adapter/t2iadapter/resolve/main/sketch_output.png)
+<p align="center">
+  <img src="https://huggingface.co/Adapter/t2iadapter/resolve/main/sketch_output.png" height=520>
+</p>
 
 ## Local test examples
 
