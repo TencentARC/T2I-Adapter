@@ -59,7 +59,7 @@ Inference requires at least `15GB` of GPU memory.
 ## Quick start with [diffusers](https://github.com/huggingface/diffusers)
 
 1. Images are first downloaded into the appropriate *control image* format.
- 2. The *control image* and *prompt* are passed to the [`StableDiffusionXLAdapterPipeline`].
+ 2. The *control image* and *prompt* are passed to the [`StableDiffusionXLAdapterPipeline`](https://github.com/huggingface/diffusers/blob/main/src/diffusers/pipelines/t2i_adapter/pipeline_stable_diffusion_xl_adapter.py#L125).
 
 Let's have a look at a simple example using the [Sketch Adapter](https://huggingface.co/Adapter/t2iadapter/tree/main/sketch_sdxl_1.0).
 
