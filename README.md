@@ -28,7 +28,7 @@ Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Con
 
 Model from [TencentARC/t2i-adapter-lineart-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-lineart-sdxl-1.0)
 <p align="center">
-  <img src="https://huggingface.co/Adapter/t2iadapter/resolve/main/t_lineart.PNG" height=520>
+  <img src="https://huggingface.co/Adapter/t2iadapter/resolve/main/t_lineart.PNG" height=420>
 </p>
   
 - Keypoint-guided
