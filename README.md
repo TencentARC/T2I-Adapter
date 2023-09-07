@@ -13,6 +13,7 @@ Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Con
 🚩 Due to the limited computing resources, those adapters are not fully trained. We are collaborating with [HuggingFace](https://huggingface.co/), and a more powerful adapter is in the works.
 
 ---
+![image](https://github.com/TencentARC/T2I-Adapter/assets/54032224/d249f699-b6d5-461d-9fdf-f0d009f14f4d)
 
 # 🔥🔥🔥 Why T2I-Adapter-SDXL? 
 ## The Original Recipe Drives Larger SD.
@@ -23,19 +24,38 @@ Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Con
 
 ## Inherit High-quality Generation from SDXL.
 
-- Keypoint-guided
+- Lineart-guided
+
+Model from [TencentARC/t2i-adapter-lineart-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-lineart-sdxl-1.0)
 <p align="center">
-  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets_XL/g_pose2.png" height=520>
+  <img src="https://huggingface.co/Adapter/t2iadapter/resolve/main/t_lineart.PNG" height=520>
+</p>
+  
+- Keypoint-guided
+
+Model from [openpose_sdxl_1.0](https://huggingface.co/Adapter/t2iadapter/tree/main/openpose_sdxl_1.0) 
+<p align="center">
+  <img src="https://huggingface.co/Adapter/t2iadapter/resolve/main/t_pose.PNG" height=520>
 </p>
 
 - Sketch-guided
+
+Model from [TencentARC/t2i-adapter-sketch-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-sketch-sdxl-1.0)
 <p align="center">
-  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets_XL/g_sketch.PNG" height=520>
+  <img src="https://huggingface.co/Adapter/t2iadapter/resolve/main/t_sketch.PNG" height=520>
 </p>
 
 - Canny-guided
+Model from [TencentARC/t2i-adapter-canny-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-canny-sdxl-1.0)
 <p align="center">
-  <img src="https://huggingface.co/TencentARC/T2I-Adapter/resolve/main/assets_XL/g_canny.png" height=520>
+  <img src="https://huggingface.co/Adapter/t2iadapter/resolve/main/t_canny.PNG" height=520>
+</p>
+
+- Depth-guided
+
+Depth guided models from [TencentARC/t2i-adapter-depth-midas-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-depth-midas-sdxl-1.0) and [TencentARC/t2i-adapter-depth-zoe-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-depth-zoe-sdxl-1.0) respectively
+<p align="center">
+  <img src="https://huggingface.co/Adapter/t2iadapter/resolve/main/t_depth.PNG" height=520>
 </p>
 
 # 🔧 Dependencies and Installation
@@ -62,88 +82,76 @@ Inference requires at least `15GB` of GPU memory.
 
 ## Quick start with [diffusers](https://github.com/huggingface/diffusers)
 
+To get started, first install the required dependencies:
+
+```bash
+pip install git+https://github.com/huggingface/diffusers.git@t2iadapterxl # for now
+pip install -U controlnet_aux==0.0.7 # for conditioning models and detectors  
+pip install transformers accelerate safetensors
+```
+
 1. Images are first downloaded into the appropriate *control image* format.
  2. The *control image* and *prompt* are passed to the [`StableDiffusionXLAdapterPipeline`](https://github.com/huggingface/diffusers/blob/main/src/diffusers/pipelines/t2i_adapter/pipeline_stable_diffusion_xl_adapter.py#L125).
 
-Let's have a look at a simple example using the [Sketch Adapter](https://huggingface.co/Adapter/t2iadapter/tree/main/sketch_sdxl_1.0).
+Let's have a look at a simple example using the [LineArt Adapter](https://huggingface.co/TencentARC/t2i-adapter-lineart-sdxl-1.0).
 
-```python
-from diffusers.utils import load_image
-
-sketch_image = load_image("https://huggingface.co/Adapter/t2iadapter/resolve/main/sketch.png").convert("L")
-```
-
-<p align="center">
-  <img src="https://huggingface.co/Adapter/t2iadapter/resolve/main/sketch.png" height=520>
-</p>
-
-Then, create the adapter pipeline
-
+- Dependency
 ```py
+from diffusers import StableDiffusionXLAdapterPipeline, T2IAdapter, EulerAncestralDiscreteScheduler, AutoencoderKL
+from diffusers.utils import load_image, make_image_grid
+from controlnet_aux.lineart import LineartDetector
 import torch
-from diffusers import (
-    T2IAdapter,
-    StableDiffusionXLAdapterPipeline,
-    DDPMScheduler
-)
-from diffusers.models.unet_2d_condition import UNet2DConditionModel
 
-model_id = "stabilityai/stable-diffusion-xl-base-1.0"
-adapter = T2IAdapter.from_pretrained("Adapter/t2iadapter", subfolder="sketch_sdxl_1.0",torch_dtype=torch.float16, adapter_type="full_adapter_xl")
-scheduler = DDPMScheduler.from_pretrained(model_id, subfolder="scheduler")
+# load adapter
+adapter = T2IAdapter.from_pretrained(
+  "TencentARC/t2i-adapter-lineart-sdxl-1.0", torch_dtype=torch.float16, varient="fp16"
+).to("cuda")
 
+# load euler_a scheduler
+model_id = 'stabilityai/stable-diffusion-xl-base-1.0'
+euler_a = EulerAncestralDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
+vae=AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16)
 pipe = StableDiffusionXLAdapterPipeline.from_pretrained(
-    model_id, adapter=adapter, safety_checker=None, torch_dtype=torch.float16, variant="fp16", scheduler=scheduler
-)
+    model_id, vae=vae, adapter=adapter, scheduler=euler_a, torch_dtype=torch.float16, variant="fp16", 
+).to("cuda")
+pipe.enable_xformers_memory_efficient_attention()
 
-pipe.to("cuda")
+line_detector = LineartDetector.from_pretrained("lllyasviel/Annotators").to("cuda")
 ```
 
-Finally, pass the prompt and control image to the pipeline
-
+- Condition Image
 ```py
-# fix the random seed, so you will get the same result as the example
-generator = torch.Generator().manual_seed(42)
+url = "https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/org_lin.jpg"
+image = load_image(url)
+image = line_detector(
+    image, detect_resolution=384, image_resolution=1024
+)
+```
+<a href="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/cond_lin.png"><img width="480" style="margin:0;padding:0;" src="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/cond_lin.png"/></a>
 
-sketch_image_out = pipe(
-    prompt="a photo of a dog in real world, high quality", 
-    negative_prompt="extra digit, fewer digits, cropped, worst quality, low quality", 
-    image=sketch_image, 
-    generator=generator, 
-    guidance_scale=7.5
+- Generation
+```py
+prompt = "Ice dragon roar, 4k photo"
+negative_prompt = "anime, cartoon, graphic, text, painting, crayon, graphite, abstract, glitch, deformed, mutated, ugly, disfigured"
+gen_images = pipe(
+    prompt=prompt,
+    negative_prompt=negative_prompt,
+    image=image,
+    num_inference_steps=30,
+    adapter_conditioning_scale=0.8,
+    guidance_scale=7.5, 
 ).images[0]
+gen_images.save('out_lin.png')
 ```
+<a href="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/cond_lin.png"><img width="480" style="margin:0;padding:0;" src="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/res_lin.png"/></a>
 
-<p align="center">
-  <img src="https://huggingface.co/Adapter/t2iadapter/resolve/main/sketch_output.png" height=520>
-</p>
-
-## Local test examples
-
-- Sketch example:
-
-```bash
-python test.py --prompt 'a photo of a dog in real world, high quality' --config configs/inference/Adapter-XL-sketch.yaml --path_source examples/dog.png --in_type image
-```
-
-- Canny example:
-
-```bash
-python test.py --prompt 'a photo of a dog in real world, high quality' --config configs/inference/Adapter-XL-canny.yaml --path_source examples/dog.png --in_type image
-```
-
-- Keypoint example:
-
-```bash
-python test.py --prompt 'a photo of two people in real world, high quality, clear' --config configs/inference/Adapter-XL-openpose.yaml --path_source examples/people.jpg --in_type image
-```
-
-
-Or you can directly use our Gradio Demo for more detailed generation design.
-
-```bash
-python app.py
-```
+### Test tutorials:
+- Sketch: [https://huggingface.co/TencentARC/t2i-adapter-sketch-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-sketch-sdxl-1.0)
+- Canny: [https://huggingface.co/TencentARC/t2i-adapter-canny-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-canny-sdxl-1.0)
+- Lineart: [https://huggingface.co/TencentARC/t2i-adapter-lineart-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-lineart-sdxl-1.0)
+- Openpose: [https://huggingface.co/Adapter/t2iadapter/tree/main/openpose_sdxl_1.0](https://huggingface.co/Adapter/t2iadapter/tree/main/openpose_sdxl_1.0)
+- Depth-mid: [https://huggingface.co/TencentARC/t2i-adapter-depth-midas-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-depth-midas-sdxl-1.0)
+- Depth-zoe: [https://huggingface.co/TencentARC/t2i-adapter-depth-zoe-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-depth-zoe-sdxl-1.0)
 
 # 🤗 Acknowledgements
 - Thanks to HuggingFace for their support of T2I-Adapter.
