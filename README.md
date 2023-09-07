@@ -1,9 +1,11 @@
 <p align="center">
-  <img src="assets/logo3.png" height=65>
+  <img src="https://github.com/TencentARC/T2I-Adapter/assets/17445847/452793ae-dcf7-4c1a-b2ee-f465f8f85236" height=120>
 </p>
 
 
-## <div align="center">T2I-Adapter for <b><a href="https://github.com/TencentARC/T2I-Adapter/tree/SD">SD-1.4/1.5</a> | <a href="https://github.com/TencentARC/T2I-Adapter">SDXL</a></b></div>
+### <div align="center">👉 T2I-Adapter for <b><a href="https://github.com/TencentARC/T2I-Adapter/tree/SD">[SD-1.4/1.5]</a>, for <a href="https://github.com/TencentARC/T2I-Adapter">[SDXL]</a></b></div>
+
+---
 
 Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models](https://arxiv.org/abs/2302.08453)** based on [Stable Diffusion-XL](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0).
 
