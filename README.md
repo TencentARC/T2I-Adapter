@@ -3,7 +3,13 @@
 </p>
 
 
-### <div align="center">👉 T2I-Adapter for <b><a href="https://github.com/TencentARC/T2I-Adapter/tree/SD">[SD-1.4/1.5]</a>, for <a href="https://github.com/TencentARC/T2I-Adapter">[SDXL]</a></b></div>
+### <div align="center">👉 T2I-Adapter for <b><a href="https://github.com/TencentARC/T2I-Adapter/tree/SD">[SD-1.4/1.5]</a>, for <a href="https://github.com/TencentARC/T2I-Adapter">[SDXL]</a></b></div> 
+
+<div align="center">
+
+[![Huggingface T2I-Adapter-SDXL](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/TencentARC/T2I-Adapter-SDXL) 
+
+</div> 
 
 ---
 
