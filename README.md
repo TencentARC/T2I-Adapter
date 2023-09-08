@@ -9,8 +9,7 @@
 
 Official implementation of **[T2I-Adapter: Learning Adapters to Dig out More Controllable Ability for Text-to-Image Diffusion Models](https://arxiv.org/abs/2302.08453)** based on [Stable Diffusion-XL](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0).
 
-
-🚩 Due to the limited computing resources, those adapters are not fully trained. We are collaborating with [HuggingFace](https://huggingface.co/), and a more powerful adapter is in the works.
+The diffusers team and the T2I-Adapter authors have been collaborating to bring the support of T2I-Adapters for Stable Diffusion XL (SDXL) in diffusers! It achieves impressive results in both performance and efficiency. 
 
 ---
 ![image](https://github.com/TencentARC/T2I-Adapter/assets/54032224/d249f699-b6d5-461d-9fdf-f0d009f14f4d)
