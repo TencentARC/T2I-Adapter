@@ -165,10 +165,13 @@ gen_images.save('out_lin.png')
 
 # 🤗 Acknowledgements
 - Thanks to HuggingFace for their support of T2I-Adapter.
-
 - T2I-Adapter is co-hosted by Tencent ARC Lab and Peking University [VILLA](https://villa.jianzhang.tech/).
 
+# BibTeX
 
-
-
-
+    @article{mou2023t2i,
+      title={T2i-adapter: Learning adapters to dig out more controllable ability for text-to-image diffusion models},
+      author={Mou, Chong and Wang, Xintao and Xie, Liangbin and Zhang, Jian and Qi, Zhongang and Shan, Ying and Qie, Xiaohu},
+      journal={arXiv preprint arXiv:2302.08453},
+      year={2023}
+    }
