@@ -7,7 +7,7 @@
 
 <div align="center">
 
-[![Huggingface T2I-Adapter-SDXL](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/TencentARC/T2I-Adapter-SDXL) 
+[![Huggingface T2I-Adapter-SDXL](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/TencentARC/T2I-Adapter-SDXL) [![Blog T2I-Adapter-SDXL](https://img.shields.io/static/v1?label=Blog&message=HuggingFace&color=orange)](https://huggingface.co/blog/t2i-sdxl-adapters)
 
 </div> 
 
