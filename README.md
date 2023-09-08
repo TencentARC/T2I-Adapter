@@ -151,7 +151,12 @@ gen_images.save('out_lin.png')
 <a href="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/cond_lin.png"><img width="480" style="margin:0;padding:0;" src="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/res_lin.png"/></a>
 
 ## Online Demo [![Huggingface T2I-Adapter-SDXL](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/TencentARC/T2I-Adapter-SDXL) 
+<a href="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/demo_dragon.png"><img width="520" style="margin:0;padding:0;" src="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/demo_dragon.png"/></a>
+
+## Online Doodle Demo [![Huggingface T2I-Adapter-SDXL](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/TencentARC/T2I-Adapter-SDXL-Sketch) 
 <a href="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/demo_tree.png"><img width="520" style="margin:0;padding:0;" src="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/demo_tree.png"/></a>
+<a href="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/demo_doodle_dragon.png"><img width="520" style="margin:0;padding:0;" src="https://huggingface.co/Adapter/t2iadapter/resolve/main/figs_SDXLV1.0/demo_doodle_dragon.png"/></a>
+
 
 # Tutorials on HuggingFace:
 - Sketch: [https://huggingface.co/TencentARC/t2i-adapter-sketch-sdxl-1.0](https://huggingface.co/TencentARC/t2i-adapter-sketch-sdxl-1.0)
