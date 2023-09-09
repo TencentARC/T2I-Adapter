@@ -31,7 +31,7 @@ The diffusers team and the T2I-Adapter authors have been collaborating to bring 
 - ✅ Mar. 3, 2023. Add a [*color adapter (spatial palette)*](https://huggingface.co/TencentARC/T2I-Adapter/tree/SD/models), which has only **17M parameters**.
 - ✅ Mar. 3, 2023. Add four new adapters [*style, color, openpose and canny*](https://huggingface.co/TencentARC/T2I-Adapter/tree/SD/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
 - ✅ Feb. 23, 2023. Add the depth adapter [*t2iadapter_depth_sd14v1.pth*](https://huggingface.co/TencentARC/T2I-Adapter/tree/SD/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
-- ✅ Feb. 15, 2023. Release [T2I-Adapter](https://github.com/TencentARC/T2I-Adapter/tree/SDhttps://github.com/TencentARC/T2I-Adapter/tree/SD).
+- ✅ Feb. 15, 2023. Release [T2I-Adapter](https://github.com/TencentARC/T2I-Adapter/tree/SD).
 
 ---
 
