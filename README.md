@@ -20,6 +20,21 @@ The diffusers team and the T2I-Adapter authors have been collaborating to bring 
 ---
 ![image](https://github.com/TencentARC/T2I-Adapter/assets/54032224/d249f699-b6d5-461d-9fdf-f0d009f14f4d)
 
+## 🚩 **New Features/Updates**
+- ✅ Sep. 8, 2023. We collaborate with the diffusers team to bring the support of T2I-Adapters for Stable Diffusion XL (SDXL) in diffusers! It achieves impressive results in both performance and efficiency. We release T2I-Adapter-SDXL models for [sketch](https://huggingface.co/TencentARC/t2i-adapter-sketch-sdxl-1.0), [canny](https://huggingface.co/TencentARC/t2i-adapter-canny-sdxl-1.0), [lineart](https://huggingface.co/TencentARC/t2i-adapter-lineart-sdxl-1.0), [openpose](https://huggingface.co/TencentARC/t2i-adapter-openpose-sdxl-1.0), [depth-zoe](https://huggingface.co/TencentARC/t2i-adapter-depth-zoe-sdxl-1.0), and [depth-mid](https://huggingface.co/TencentARC/t2i-adapter-depth-midas-sdxl-1.0). We release two online demos: [![Huggingface T2I-Adapter-SDXL](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/TencentARC/T2I-Adapter-SDXL) and [![Huggingface T2I-Adapter-SDXL Doodle](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Doodle%20Demo&color=orange)](https://huggingface.co/spaces/TencentARC/T2I-Adapter-SDXL-Sketch).
+- ✅ Aug. 21, 2023. We release [T2I-Adapter-SDXL](https://github.com/TencentARC/T2I-Adapter/), including sketch, canny, and keypoint. We still use the original recipe (77M parameters, a single inference) to drive [StableDiffusion-XL](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0). Due to the limited computing resources, those adapters still need further improvement. We are collaborating with [HuggingFace](https://huggingface.co/), and a more powerful adapter is in the works.
+
+- ✅ Jul. 13, 2023. [Stability AI](https://stability.ai/) release [Stable Doodle](https://stability.ai/blog/clipdrop-launches-stable-doodle), a groundbreaking sketch-to-image tool based on T2I-Adapter and [SDXL](https://huggingface.co/stabilityai/stable-diffusion-xl-base-0.9). It makes drawing easier.
+
+- ✅ Mar. 16, 2023. We add **CoAdapter** (**Co**mposable **Adapter**). The online Huggingface Gadio has been updated [![Huggingface Gradio (CoAdapter)](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/Adapter/CoAdapter). You can also try the [local gradio demo](app_coadapter.py).
+- ✅ Mar. 16, 2023. We have shrunk the git repo with [bfg](https://rtyley.github.io/bfg-repo-cleaner/).  If you encounter any issues when pulling or pushing, you can try re-cloning the repository. Sorry for the inconvenience.
+- ✅ Mar. 3, 2023. Add a [*color adapter (spatial palette)*](https://huggingface.co/TencentARC/T2I-Adapter/tree/SD/models), which has only **17M parameters**.
+- ✅ Mar. 3, 2023. Add four new adapters [*style, color, openpose and canny*](https://huggingface.co/TencentARC/T2I-Adapter/tree/SD/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
+- ✅ Feb. 23, 2023. Add the depth adapter [*t2iadapter_depth_sd14v1.pth*](https://huggingface.co/TencentARC/T2I-Adapter/tree/SD/models). See more info in the **[Adapter Zoo](docs/AdapterZoo.md)**.
+- ✅ Feb. 15, 2023. Release [T2I-Adapter](https://github.com/TencentARC/T2I-Adapter/tree/SDhttps://github.com/TencentARC/T2I-Adapter/tree/SD).
+
+---
+
 # 🔥🔥🔥 Why T2I-Adapter-SDXL? 
 ## The Original Recipe Drives Larger SD.
 
