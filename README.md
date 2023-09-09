@@ -7,7 +7,7 @@
 
 <div align="center">
 
-[![Huggingface T2I-Adapter-SDXL](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/TencentARC/T2I-Adapter-SDXL) [![Blog T2I-Adapter-SDXL](https://img.shields.io/static/v1?label=Blog&message=HuggingFace&color=orange)](https://huggingface.co/blog/t2i-sdxl-adapters)
+[![Huggingface T2I-Adapter-SDXL](https://img.shields.io/static/v1?label=Demo&message=Huggingface%20Gradio&color=orange)](https://huggingface.co/spaces/TencentARC/T2I-Adapter-SDXL) &ensp;  [![Blog T2I-Adapter-SDXL](https://img.shields.io/static/v1?label=Blog&message=HuggingFace&color=orange)](https://huggingface.co/blog/t2i-sdxl-adapters) &ensp;   [![arXiv](https://img.shields.io/badge/arXiv-2302.08453-b31b1b.svg?style=flat-square)](https://arxiv.org/abs/2302.08453)
 
 </div> 
 
