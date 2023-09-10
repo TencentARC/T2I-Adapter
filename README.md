@@ -87,7 +87,7 @@ pip install -r requirements.txt
 ```
 
 # ⏬ Download Models 
-All models will be automatically downloaded to the `checkpoints` folder. You can also choose to download manually from this [url](https://huggingface.co/TencentARC/T2I-Adapter/tree/main/models_XL).
+All models will be automatically downloaded. You can also choose to download manually from this [url](https://huggingface.co/TencentARC).
 
 # 🔥 How to Train
 Here we take sketch guidance as an example, but of course, you can also prepare your own dataset following this method.
