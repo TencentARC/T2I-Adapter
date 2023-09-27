@@ -61,6 +61,14 @@ from huggingface_hub import hf_hub_url
 import subprocess
 import shlex
 
+
+## custom dataloder
+def light_dataloader():
+    dataset = load_dataset("laion/laion-high-resolution")
+    dataloader = DataLoader(dataset, batch_size=4)
+    return dataloader
+
+
 urls = {
     'TencentARC/T2I-Adapter':[
         'third-party-models/body_pose_model.pth', 'third-party-models/table5_pidinet.pth'
@@ -582,8 +590,9 @@ def main(args):
     torch.cuda.empty_cache()
 
     # data
-    data = instantiate_from_config(config.data)
-    train_dataloader = data.train_dataloader()
+    train_dataloader = light_dataloader() 
+    # instantiate_from_config(config.data)
+    # train_dataloader = data.train_dataloader()
 
     # Scheduler and math around the number of training steps.
     overrode_max_train_steps = False
